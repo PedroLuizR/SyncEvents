@@ -47,6 +47,20 @@
 | 31 | O código da empresa aparece no perfil com o texto "Compartilhe com sua equipe". | Pensando no futuro perfil Funcionário (fora do escopo). |
 | 32 | Na web, os uploads convertem a imagem em `Blob` antes de enviar (no Android o `FormData` aceita `{ uri, name, type }`). | Permite demonstrar o app pelo navegador. |
 
+## Fase 3
+
+| # | Decisão | Motivo |
+|---|---|---|
+| 33 | **Notas e avaliações ficam para a Fase 6.** Até lá os cards e o perfil mostram o selo "Novo", e "Melhor avaliadas" ordena por relevância. O seed também não traz avaliações. | A tabela `avaliacao` depende de `solicitacao` (Fase 4): só quem concluiu um evento pode avaliar. Criar avaliações falsas agora quebraria essa regra. |
+| 34 | Indicadores do perfil: **serviços publicados**, **fotos no portfólio** e **ano de entrada**, no lugar de "eventos realizados", "tempo de resposta" e "% recomendam" do Figma. | Esses três dependem de solicitações, chat e avaliações (Fases 4 a 6). O campo `eventosRealizados` já existe na API e passa a ser preenchido na Fase 4. |
+| 35 | Busca com várias palavras: **todas** precisam aparecer (no nome, na categoria, num serviço ou nas descrições); palavras como "de", "para" e "e" são ignoradas. | "Decoração para casamento" deve trazer quem faz decoração **de** casamento, não qualquer decoração. |
+| 36 | A busca usa SQL com `unaccent` em vez de JPA/Criteria. | Relevância ponderada, filtros opcionais e agregações (menor preço) ficam mais simples e rápidas em SQL. |
+| 37 | Não implementados por estarem fora do escopo ou sem dados: **distância** ("4,2 km"), **favoritos** (coração), **mapa** e o **sino de notificações**. O filtro de faixa de preço do Figma ("até R$ 5.000") também não, porque o plano define só categoria, cidade e ordenação. | Exigiriam geolocalização, uma tabela nova ou push (fora do MVP). |
+| 38 | Os filtros da busca ficam nos **parâmetros da rota** (`/cliente/buscar?q=&categoriaId=&cidade=&ordenar=`). | O Início abre a busca já filtrada (categoria, texto, banner) e o "voltar" preserva o estado. |
+| 39 | Busca e recomendados são só para **clientes** (403 para empresa); o perfil público pode ser aberto por qualquer usuário logado, mas só a visita de cliente conta como visualização. | Seção 7 do plano. |
+| 40 | Seed de demonstração em Java (`DemoSeeder`), com imagens geradas por código (gradiente com "luzes"), no lugar de fotos reais. | Evita fotos com direitos autorais e roda sem depender de internet. |
+| 41 | "Solicitar orçamento" no perfil ainda mostra "Em breve". | O fluxo de orçamento é a Fase 4. |
+
 ## Pontos em aberto (aguardando o usuário)
 
 1. ~~Cadastro de cliente, etapa 2~~ → decidido (decisão 11).

@@ -15,5 +15,9 @@ public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
 
     boolean existsByCnpj(String cnpj);
 
+    @EntityGraph(attributePaths = {"categorias", "usuario"})
+    @org.springframework.data.jpa.repository.Query("select e from Empresa e where e.id = ?1")
+    Optional<Empresa> findComCategoriasById(Long id);
+
     boolean existsByCodigo(String codigo);
 }

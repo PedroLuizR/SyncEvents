@@ -73,3 +73,52 @@ export interface Servico {
   criadoEm: string;
   atualizadoEm: string;
 }
+
+export interface Pagina<T> {
+  conteudo: T[];
+  pagina: number;
+  tamanho: number;
+  total: number;
+  totalPaginas: number;
+  ultima: boolean;
+}
+
+/** Card de empresa na busca e nos recomendados. */
+export interface EmpresaResumo {
+  id: number;
+  nomeFantasia: string;
+  logoUrl?: string;
+  capaUrl?: string;
+  cidade: string;
+  categorias: Categoria[];
+  /** média das avaliações; ausente enquanto não houver avaliações (Fase 6) */
+  nota?: number;
+  totalAvaliacoes: number;
+  precoAPartirDe?: number;
+}
+
+export interface EmpresaPublica {
+  id: number;
+  codigo: string;
+  nomeFantasia: string;
+  descricao?: string;
+  cidade: string;
+  uf?: string;
+  endereco?: string;
+  telefoneWhatsapp: string;
+  logoUrl?: string;
+  capaUrl?: string;
+  categorias: Categoria[];
+  portfolio: Foto[];
+  servicos: Servico[];
+  nota?: number;
+  totalAvaliacoes: number;
+  indicadores: {
+    eventosRealizados: number;
+    servicos: number;
+    fotos: number;
+    naPlataformaDesde: number;
+  };
+}
+
+export type OrdenacaoBusca = 'relevancia' | 'nota' | 'preco';

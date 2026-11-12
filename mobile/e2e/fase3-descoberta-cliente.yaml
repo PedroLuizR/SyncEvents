@@ -1,0 +1,43 @@
+# Fase 3: cliente busca empresas e abre um perfil.
+# Pré-requisitos: backend no perfil dev (com o seed de demonstração) e app instalado.
+# Rodar:  maestro test e2e/fase3-descoberta-cliente.yaml
+appId: br.com.syncevents
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: 'continuar'
+- tapOn:
+    id: 'campo-login'
+- inputText: 'marina@demo.syncevents.com'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- assertVisible: 'Vamos celebrar?'
+- assertVisible: 'Recomendados para você'
+
+# Busca por texto
+- tapOn:
+    id: 'busca-inicio'
+- inputText: 'decoração'
+- pressKey: Enter
+- assertVisible: 'Ateliê Aurora Eventos'
+- assertVisible: 'Jardim Secreto Decor'
+
+# Filtro por categoria
+- tapOn: 'Fotografia'
+- assertNotVisible: 'Jardim Secreto Decor'
+
+# Perfil da empresa
+- tapOn:
+    id: 'busca'
+- eraseText
+- pressKey: Enter
+- tapOn: 'Ateliê Aurora Eventos'
+- assertVisible: 'Portfólio'
+- assertVisible: 'Decoração completa para casamentos'
+- assertVisible:
+    id: 'solicitar-orcamento'

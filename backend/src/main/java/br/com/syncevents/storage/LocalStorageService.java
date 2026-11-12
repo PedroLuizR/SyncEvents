@@ -62,6 +62,22 @@ public class LocalStorageService implements StorageService {
     }
 
     @Override
+    public String salvar(byte[] conteudo, String extensao, String pasta) {
+        String nome = UUID.randomUUID() + "." + extensao;
+        Path destino = raiz.resolve(pasta).resolve(nome).normalize();
+        if (!destino.startsWith(raiz)) {
+            throw new IllegalArgumentException("Pasta inválida: " + pasta);
+        }
+        try {
+            Files.createDirectories(destino.getParent());
+            Files.write(destino, conteudo);
+        } catch (IOException e) {
+            throw new IllegalStateException("Falha ao salvar arquivo", e);
+        }
+        return PREFIXO_PUBLICO + pasta + "/" + nome;
+    }
+
+    @Override
     public void remover(String url) {
         if (url == null || !url.startsWith(PREFIXO_PUBLICO)) {
             return;

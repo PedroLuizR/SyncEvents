@@ -12,3 +12,6 @@ app:
   jwt:
     # só para desenvolvimento local; fora do perfil dev, APP_JWT_SECRET é obrigatório
     segredo: ${APP_JWT_SECRET:dev-segredo-local-syncevents-troque-em-producao-0123456789}
+  # Dados de demonstração (10 empresas + cliente marina@demo.syncevents.com / Senha@123)
+  seed:
+    demo: ${APP_SEED_DEMO:true}

@@ -29,8 +29,19 @@ export const colors = {
   dangerSoft: '#F9E3E1',
 
   overlay: 'rgba(43, 27, 35, 0.45)',
+  overlayLeve: 'rgba(255, 255, 255, 0.9)',
   transparent: 'transparent',
 } as const;
+
+/** Fundos suaves dos ícones de categoria (Início), em ordem. */
+export const tonsCategoria = [
+  '#FCEBDD',
+  '#F1E3F0',
+  '#FBE4E6',
+  '#E3F1EC',
+  '#E6ECF7',
+  '#FFF3D6',
+] as const;
 
 export const fonts = {
   serif: 'PlayfairDisplay_700Bold',
@@ -126,5 +137,15 @@ export const shadows = {
   },
 } as const;
 
-export const theme = { colors, fonts, fontSizes, typography, spacing, radii, shadows, touchTarget };
+export const theme = {
+  colors,
+  tonsCategoria,
+  fonts,
+  fontSizes,
+  typography,
+  spacing,
+  radii,
+  shadows,
+  touchTarget,
+};
 export type Theme = typeof theme;

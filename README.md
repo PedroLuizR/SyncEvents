@@ -13,8 +13,9 @@ App Android que conecta **clientes** a **empresas organizadoras de eventos**: bu
 | 0 | Fundação (infra, backend base, app base, design system) | ✅ |
 | 1 | Autenticação e cadastros (boas-vindas, login, cadastro de cliente e de empresa) | ✅ |
 | 2 | Empresa: perfil (logo, capa, portfólio) e serviços (criar, editar, rascunho, ativar/desativar, excluir) | ✅ |
-| 3 | Cliente: busca e perfil da empresa | ⏳ |
-| 4 a 7 | Ver o plano | — |
+| 3 | Cliente: Início, busca com filtros e perfil da empresa; dados de demonstração | ✅ |
+| 4 | Orçamentos e painel da empresa | ⏳ |
+| 5 a 7 | Ver o plano | — |
 
 ## Pré-requisitos
 
@@ -59,6 +60,13 @@ npx expo run:android
 `EXPO_PUBLIC_API_URL` no `.env`: `http://10.0.2.2:8080` no emulador Android; em aparelho físico, use o IP da sua máquina na rede.
 
 Para só ver a interface no navegador: `npx expo start --web`.
+
+### Contas de demonstração (perfil `dev`)
+
+Na primeira vez que o backend sobe no perfil `dev`, ele cria 10 empresas com serviços e fotos:
+
+- Cliente: `marina@demo.syncevents.com` / `Senha@123`
+- Empresa: `contato@aurora.demo.syncevents.com` / `Senha@123` (as outras seguem o mesmo padrão, ver `DemoSeeder.java`)
 
 ## Testes e qualidade
 

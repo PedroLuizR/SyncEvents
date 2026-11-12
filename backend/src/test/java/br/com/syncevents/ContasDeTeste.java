@@ -30,14 +30,18 @@ public final class ContasDeTeste {
     }
 
     public Conta empresa(String nome) throws Exception {
+        return empresa(nome, "São Paulo, SP", "1");
+    }
+
+    public Conta empresa(String nome, String cidade, String... categoriaIds) throws Exception {
         String email = TestData.email("emp");
         mvc.perform(multipart("/api/v1/auth/cadastro/empresa")
                         .param("nomeFantasia", nome)
                         .param("cnpj", TestData.cnpjValido())
                         .param("email", email)
                         .param("telefone", "11987654321")
-                        .param("cidade", "São Paulo, SP")
-                        .param("categoriaIds", "1")
+                        .param("cidade", cidade)
+                        .param("categoriaIds", categoriaIds)
                         .param("senha", "Senha@123")
                         .param("aceiteTermos", "true"))
                 .andExpect(status().isCreated());
@@ -45,12 +49,16 @@ public final class ContasDeTeste {
     }
 
     public Conta cliente() throws Exception {
+        return cliente("São Paulo, SP");
+    }
+
+    public Conta cliente(String cidade) throws Exception {
         String email = TestData.email("cli");
         mvc.perform(multipart("/api/v1/auth/cadastro/cliente")
                         .param("nome", "Marina Alves")
                         .param("email", email)
                         .param("telefone", "11987654321")
-                        .param("cidade", "São Paulo, SP")
+                        .param("cidade", cidade)
                         .param("senha", "Senha@123")
                         .param("aceiteTermos", "true"))
                 .andExpect(status().isCreated());

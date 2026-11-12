@@ -53,6 +53,9 @@ public class SecurityConfig {
                         // Rotas exclusivas de empresa (a posse do recurso é checada no service)
                         .requestMatchers("/api/v1/empresas/me", "/api/v1/empresas/me/**").hasRole("EMPRESA")
                         .requestMatchers("/api/v1/servicos/me").hasRole("EMPRESA")
+                        // Descoberta: busca e recomendados são do cliente
+                        .requestMatchers(HttpMethod.GET, "/api/v1/empresas", "/api/v1/empresas/recomendadas")
+                        .hasRole("CLIENTE")
                         .requestMatchers(HttpMethod.POST, "/api/v1/servicos/**").hasRole("EMPRESA")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/servicos/**").hasRole("EMPRESA")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/servicos/**").hasRole("EMPRESA")

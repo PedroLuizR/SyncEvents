@@ -15,6 +15,9 @@ public interface StorageService {
      */
     String salvarImagem(MultipartFile arquivo, String pasta);
 
+    /** Salva bytes já prontos (usado pelo seed de demonstração). Retorna o caminho público. */
+    String salvar(byte[] conteudo, String extensao, String pasta);
+
     /** Remove um arquivo pelo caminho público. Ignora caminhos desconhecidos. */
     void remover(String url);
 }

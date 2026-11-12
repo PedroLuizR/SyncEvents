@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.syncevents.auth.UsuarioAutenticado;
+import br.com.syncevents.busca.BuscaService;
+import br.com.syncevents.busca.EmpresaPublicaResponse;
+import br.com.syncevents.busca.EmpresaResumo;
+import br.com.syncevents.busca.FiltroBusca;
+import br.com.syncevents.common.Pagina;
 import br.com.syncevents.empresa.dto.EmpresaPerfilResponse;
 import br.com.syncevents.empresa.dto.EmpresaUpdateRequest;
 import br.com.syncevents.servico.ServicoService;
@@ -31,10 +36,37 @@ public class EmpresaController {
 
     private final EmpresaService service;
     private final ServicoService servicoService;
+    private final BuscaService buscaService;
 
-    public EmpresaController(EmpresaService service, ServicoService servicoService) {
+    public EmpresaController(EmpresaService service, ServicoService servicoService, BuscaService buscaService) {
         this.service = service;
         this.servicoService = servicoService;
+        this.buscaService = buscaService;
+    }
+
+    @GetMapping
+    @Operation(summary = "ID06: busca por nome, serviço ou categoria, com filtros e paginação",
+            description = "ordenar = relevancia | nota | preco. A busca ignora acentos e maiúsculas.")
+    public Pagina<EmpresaResumo> buscar(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Long categoriaId,
+            @RequestParam(required = false) String cidade,
+            @RequestParam(required = false) String ordenar,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        return buscaService.buscar(FiltroBusca.de(q, categoriaId, cidade, ordenar, page, size));
+    }
+
+    @GetMapping("/recomendadas")
+    @Operation(summary = "Início do cliente: empresas recomendadas (mesma cidade primeiro)")
+    public List<EmpresaResumo> recomendadas(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return buscaService.recomendadas(usuario);
+    }
+
+    @GetMapping("/{id:\\d+}")
+    @Operation(summary = "ID07: perfil público da empresa (registra a visualização quando é um cliente)")
+    public EmpresaPublicaResponse perfil(@AuthenticationPrincipal UsuarioAutenticado usuario, @PathVariable Long id) {
+        return buscaService.perfil(usuario, id);
     }
 
     @GetMapping("/me")

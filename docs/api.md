@@ -169,6 +169,59 @@ Corpo de criação/edição:
 Normalização: `SOB_CONSULTA` descarta os preços; `precoMax` só é guardado em `FAIXA`; itens vazios são ignorados.
 Um serviço aparece para clientes apenas se `ativo = true` e `rascunho = false`.
 
+## Fase 3: cliente: descoberta
+
+### `GET /empresas` (cliente) — ID06
+
+| Parâmetro | Descrição |
+|---|---|
+| `q` | texto livre. Ignora acentos e maiúsculas. Cada palavra (exceto "de", "para", "e"...) precisa aparecer no **nome da empresa**, numa **categoria**, no **nome de um serviço publicado** ou nas descrições |
+| `categoriaId` | só empresas com essa categoria |
+| `cidade` | prefixo da cidade, sem acento (ex.: `sao paulo` ou `São Paulo, SP`) |
+| `ordenar` | `relevancia` (padrão), `nota` ou `preco` (menor "a partir de" primeiro; sem preço por último) |
+| `page`, `size` | página a partir de 0; tamanho padrão 20, máximo 50 |
+
+Relevância: nome (4) > categoria (3) > nome de serviço (2) > descrições (1), somada por palavra.
+Serviços inativos e rascunhos não contam.
+
+```json
+{
+  "conteudo": [{
+    "id": 1, "nomeFantasia": "Ateliê Aurora Eventos", "logoUrl": "/files/logos/a.jpg",
+    "capaUrl": "/files/capas/b.jpg", "cidade": "São Paulo, SP",
+    "categorias": [{ "id": 1, "nome": "Decoração", "icone": "star" }],
+    "nota": null, "totalAvaliacoes": 0, "precoAPartirDe": 2800.00
+  }],
+  "pagina": 0, "tamanho": 20, "total": 7, "totalPaginas": 1, "ultima": true
+}
+```
+
+### `GET /empresas/recomendadas` (cliente)
+
+Até 10 empresas com ao menos um serviço publicado. As da **cidade do cliente** vêm primeiro, depois as com mais serviços.
+
+### `GET /empresas/{id}` (autenticado) — ID07
+
+Perfil público: dados, categorias, portfólio, serviços publicados, nota e indicadores.
+Quando quem abre é um **cliente**, grava uma linha em `visualizacao_perfil` (usado no painel da empresa, Fase 4).
+Não expõe CNPJ nem e-mail.
+
+```json
+{
+  "id": 1, "codigo": "504731", "nomeFantasia": "Ateliê Aurora Eventos", "descricao": "...",
+  "cidade": "São Paulo, SP", "uf": "SP", "endereco": "Rua Harmonia, 520", "telefoneWhatsapp": "11987654321",
+  "logoUrl": "...", "capaUrl": "...", "categorias": [...], "portfolio": [...], "servicos": [...],
+  "nota": null, "totalAvaliacoes": 0,
+  "indicadores": { "eventosRealizados": 0, "servicos": 2, "fotos": 4, "naPlataformaDesde": 2026 }
+}
+```
+
+### Dados de demonstração (perfil `dev`)
+
+Ao subir no perfil `dev`, o backend cria (uma única vez) 10 empresas com logo, capa, portfólio e serviços, e a cliente
+**marina@demo.syncevents.com**. Todas as contas usam a senha **Senha@123**; os e-mails das empresas terminam em
+`@...demo.syncevents.com` (ex.: `contato@aurora.demo.syncevents.com`). Para desligar: `APP_SEED_DEMO=false`.
+
 ## Erros de validação (exemplos)
 
 ```json

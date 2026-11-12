@@ -22,3 +22,8 @@ export * from './Select';
 export * from './StatusBadge';
 export * from './SwitchCard';
 export * from './ServicoCard';
+export * from './BarraBusca';
+export * from './CategoriaAtalho';
+export * from './EmpresaCard';
+export * from './Nota';
+export * from './FiltrosBusca';
