@@ -1,4 +1,4 @@
-import type { EmpresaPublica, EmpresaResumo, Pagina } from '@/api/types';
+import type { EmpresaPublica, EmpresaResumo, Pagina, Solicitacao } from '@/api/types';
 
 export const CATEGORIAS = [
   { id: 1, nome: 'Decoração', icone: 'star' },
@@ -63,3 +63,32 @@ export const EMPRESA_PUBLICA: EmpresaPublica = {
   totalAvaliacoes: 0,
   indicadores: { eventosRealizados: 0, servicos: 1, fotos: 1, naPlataformaDesde: 2026 },
 };
+
+export function solicitacao(id: number, extra: Partial<Solicitacao> = {}): Solicitacao {
+  return {
+    id,
+    status: 'PENDENTE',
+    tipoEvento: 'CASAMENTO',
+    dataEvento: '2027-10-16',
+    qtdConvidados: 120,
+    local: 'Espaço Jardim, Cotia',
+    orcamentoMin: 10000,
+    orcamentoMax: 20000,
+    mensagem: 'Queremos algo ao ar livre.',
+    criadoEm: new Date().toISOString(),
+    atualizadoEm: new Date().toISOString(),
+    cliente: {
+      id: 3,
+      nome: 'Marina Alves',
+      cidade: 'São Paulo, SP',
+      telefone: '11987654321',
+      email: 'marina@email.com',
+    },
+    empresa: { id: 1, nomeFantasia: 'Ateliê Aurora', cidade: 'São Paulo, SP' },
+    servicos: [{ id: 7, nome: 'Decoração completa' }],
+    anexos: [],
+    propostas: [],
+    conversaId: 11,
+    ...extra,
+  };
+}

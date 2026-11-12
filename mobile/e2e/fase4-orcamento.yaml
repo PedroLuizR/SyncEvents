@@ -1,0 +1,81 @@
+# Fase 4: cliente pede orçamento; empresa analisa e envia proposta; cliente aceita; empresa conclui.
+# Pré-requisitos: backend no perfil dev (seed de demonstração) e app instalado.
+# Rodar:  maestro test e2e/fase4-orcamento.yaml
+appId: br.com.syncevents
+---
+# ---------- Cliente pede orçamento
+- launchApp:
+    clearState: true
+- tapOn:
+    id: 'continuar'
+- tapOn:
+    id: 'campo-login'
+- inputText: 'marina@demo.syncevents.com'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- tapOn:
+    id: 'busca-inicio'
+- inputText: 'ateliê aurora'
+- pressKey: Enter
+- tapOn: 'Ateliê Aurora Eventos'
+- tapOn:
+    id: 'solicitar-orcamento'
+- assertVisible: 'Conte sobre seu evento'
+- tapOn:
+    id: 'campo-data'
+- tapOn: 'OK' # seletor de data nativo (data padrão: hoje)
+- tapOn:
+    id: 'campo-convidados'
+- inputText: '120'
+- tapOn:
+    id: 'campo-local'
+- inputText: 'Espaço Jardim das Oliveiras, Cotia'
+- hideKeyboard
+- tapOn: 'Casamento'
+- scrollUntilVisible:
+    element:
+      id: 'aceite-contato'
+- tapOn:
+    id: 'aceite-contato'
+- tapOn:
+    id: 'revisar'
+- assertVisible: 'Revise sua solicitação'
+- tapOn:
+    id: 'enviar-solicitacao'
+- assertVisible: 'Solicitação enviada!'
+- tapOn:
+    id: 'ver-solicitacao'
+- assertVisible: 'Aguardando'
+
+# ---------- Empresa responde
+- launchApp:
+    clearState: true
+- tapOn:
+    id: 'opcao-empresa'
+- tapOn:
+    id: 'continuar'
+- tapOn:
+    id: 'campo-login'
+- inputText: 'contato@aurora.demo.syncevents.com'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- assertVisible: 'Visão geral'
+- tapOn: 'Responder'
+- tapOn:
+    id: 'proposta-valor'
+- inputText: '1050000'
+- tapOn:
+    id: 'proposta-descricao'
+- inputText: 'Decoração completa com montagem'
+- hideKeyboard
+- tapOn:
+    id: 'confirmar-proposta'
+- assertVisible: 'Proposta enviada. Aguardando a resposta do cliente.'

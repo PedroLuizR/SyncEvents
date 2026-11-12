@@ -122,3 +122,57 @@ export interface EmpresaPublica {
 }
 
 export type OrdenacaoBusca = 'relevancia' | 'nota' | 'preco';
+
+export type StatusSolicitacao =
+  'PENDENTE' | 'EM_ANALISE' | 'EM_NEGOCIACAO' | 'ACEITA' | 'CONCLUIDA' | 'RECUSADA' | 'CANCELADA';
+
+export type StatusProposta = 'ENVIADA' | 'ACEITA' | 'RECUSADA';
+
+export interface Proposta {
+  id: number;
+  valor: number;
+  descricao: string;
+  status: StatusProposta;
+  criadoEm: string;
+}
+
+export interface Solicitacao {
+  id: number;
+  status: StatusSolicitacao;
+  tipoEvento: TipoEvento;
+  /** yyyy-MM-dd */
+  dataEvento: string;
+  qtdConvidados: number;
+  local: string;
+  orcamentoMin?: number;
+  orcamentoMax?: number;
+  mensagem?: string;
+  criadoEm: string;
+  atualizadoEm: string;
+  cliente: {
+    id: number;
+    nome: string;
+    cidade: string;
+    telefone: string;
+    email: string;
+    fotoUrl?: string;
+  };
+  empresa: { id: number; nomeFantasia: string; cidade: string; logoUrl?: string };
+  servicos: { id: number; nome: string }[];
+  anexos: { id: number; url: string }[];
+  propostas: Proposta[];
+  propostaAtual?: Proposta;
+  conversaId?: number;
+}
+
+export interface Dashboard {
+  dias: number;
+  visualizacoes: number;
+  variacaoVisualizacoes?: number;
+  solicitacoes: number;
+  variacaoSolicitacoes?: number;
+  taxaResposta?: number;
+  pendentes: number;
+  servicosAtivos: number;
+  servicosRascunho: number;
+}

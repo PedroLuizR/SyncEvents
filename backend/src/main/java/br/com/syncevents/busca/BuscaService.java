@@ -20,6 +20,8 @@ import br.com.syncevents.empresa.VisualizacaoPerfilRepository;
 import br.com.syncevents.servico.ServicoRepository;
 import br.com.syncevents.servico.dto.FotoResponse;
 import br.com.syncevents.servico.dto.ServicoResponse;
+import br.com.syncevents.solicitacao.SolicitacaoRepository;
+import br.com.syncevents.solicitacao.StatusSolicitacao;
 import br.com.syncevents.usuario.TipoUsuario;
 
 @Service
@@ -34,16 +36,19 @@ public class BuscaService {
     private final ServicoRepository servicoRepository;
     private final PortfolioFotoRepository portfolioRepository;
     private final VisualizacaoPerfilRepository visualizacaoRepository;
+    private final SolicitacaoRepository solicitacaoRepository;
 
     public BuscaService(BuscaRepository buscaRepository, EmpresaRepository empresaRepository,
             ClienteRepository clienteRepository, ServicoRepository servicoRepository,
-            PortfolioFotoRepository portfolioRepository, VisualizacaoPerfilRepository visualizacaoRepository) {
+            PortfolioFotoRepository portfolioRepository, VisualizacaoPerfilRepository visualizacaoRepository,
+            SolicitacaoRepository solicitacaoRepository) {
         this.buscaRepository = buscaRepository;
         this.empresaRepository = empresaRepository;
         this.clienteRepository = clienteRepository;
         this.servicoRepository = servicoRepository;
         this.portfolioRepository = portfolioRepository;
         this.visualizacaoRepository = visualizacaoRepository;
+        this.solicitacaoRepository = solicitacaoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -74,7 +79,8 @@ public class BuscaService {
                 .map(ServicoResponse::de).toList();
         List<FotoResponse> portfolio = portfolioRepository.findByEmpresaIdOrderByOrdemAscIdAsc(e.getId()).stream()
                 .map(p -> new FotoResponse(p.getId(), p.getUrl(), p.getOrdem())).toList();
-        var indicadores = new EmpresaPublicaResponse.Indicadores(0, servicos.size(), portfolio.size(),
+        long eventos = solicitacaoRepository.countByEmpresaIdAndStatus(e.getId(), StatusSolicitacao.CONCLUIDA);
+        var indicadores = new EmpresaPublicaResponse.Indicadores(eventos, servicos.size(), portfolio.size(),
                 e.getCriadoEm().atZone(FUSO).getYear());
 
         return new EmpresaPublicaResponse(e.getId(), e.getCodigo(), e.getNomeFantasia(), e.getDescricao(),

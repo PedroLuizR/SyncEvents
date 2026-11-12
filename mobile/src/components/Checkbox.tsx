@@ -1,5 +1,5 @@
 import { Feather } from '@expo/vector-icons';
-import type { ReactNode } from 'react';
+import { isValidElement, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { colors, radii, spacing, touchTarget } from '@/theme';
@@ -28,7 +28,7 @@ export function Checkbox({ marcado, onChange, children, erro, testID }: Checkbox
           {marcado ? <Feather name="check" size={14} color={colors.onPrimary} /> : null}
         </View>
         <View style={styles.texto}>
-          {typeof children === 'string' ? <Text variant="label">{children}</Text> : children}
+          {isValidElement(children) ? children : <Text variant="label">{children}</Text>}
         </View>
       </Pressable>
       {erro ? (

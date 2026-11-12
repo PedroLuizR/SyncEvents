@@ -42,7 +42,7 @@
 | 26 | Limites: 6 fotos por serviço (o Figma mostra "x de 6") e 12 no portfólio. | Evitar uploads sem fim; 12 é suficiente para um portfólio. |
 | 27 | No formulário de serviço, as fotos novas e removidas ficam pendentes e só são enviadas ao salvar (depois de criar o serviço, porque o upload precisa do id). No **perfil**, logo, capa e portfólio são enviados **na hora**. | No serviço, permite cancelar a edição; no perfil, cada foto é uma ação independente. |
 | 28 | E-mail e CNPJ não podem ser editados no perfil. | São as credenciais de login da empresa. |
-| 29 | Excluir serviço apaga de vez (com as fotos) após uma confirmação. Quando houver solicitações (Fase 4), a regra será revista para não quebrar o histórico. | Hoje nada referencia o serviço. |
+| 29 | Excluir serviço apaga de vez (com as fotos) após uma confirmação. **Atualizado na Fase 4:** se o serviço aparece em alguma solicitação, a exclusão é bloqueada (409) e a empresa deve desativá-lo. | Preserva o histórico dos pedidos. |
 | 30 | A tela de criar/editar serviço abre por cima das abas (sem a barra de abas), enquanto no Figma a barra aparece. | Os botões fixos "Salvar rascunho" / "Atualizar serviço" ficam mais visíveis e não competem com a barra. |
 | 31 | O código da empresa aparece no perfil com o texto "Compartilhe com sua equipe". | Pensando no futuro perfil Funcionário (fora do escopo). |
 | 32 | Na web, os uploads convertem a imagem em `Blob` antes de enviar (no Android o `FormData` aceita `{ uri, name, type }`). | Permite demonstrar o app pelo navegador. |
@@ -60,6 +60,21 @@
 | 39 | Busca e recomendados são só para **clientes** (403 para empresa); o perfil público pode ser aberto por qualquer usuário logado, mas só a visita de cliente conta como visualização. | Seção 7 do plano. |
 | 40 | Seed de demonstração em Java (`DemoSeeder`), com imagens geradas por código (gradiente com "luzes"), no lugar de fotos reais. | Evita fotos com direitos autorais e roda sem depender de internet. |
 | 41 | "Solicitar orçamento" no perfil ainda mostra "Em breve". | O fluxo de orçamento é a Fase 4. |
+
+## Fase 4
+
+| # | Decisão | Motivo |
+|---|---|---|
+| 42 | Novo status **CANCELADA**, para quando o cliente desiste antes de aceitar. | O plano diz que o cliente pode cancelar antes de ACEITA, mas o diagrama não tinha um estado para isso. |
+| 43 | **Recusar a proposta** não encerra o pedido: a proposta fica RECUSADA e a solicitação continua EM_NEGOCIACAO, para a empresa mandar outra. Só uma proposta pode estar aguardando resposta por vez (índice único no banco). | Recusar costuma significar "quero outro valor"; para desistir de vez existe o cancelamento. |
+| 44 | A empresa **não** passa para EM_NEGOCIACAO pelo PATCH de status: isso só acontece ao enviar uma proposta. | EM_NEGOCIACAO significa "proposta enviada" no plano. |
+| 45 | A **mensagem do tipo PROPOSTA no chat** fica para a Fase 5 (a tabela `mensagem` nasce lá). A conversa já é criada junto com a solicitação. | Segue a ordem das fases do plano. |
+| 46 | Taxa de resposta = % das solicitações dos últimos 30 dias que saíram de PENDENTE, **sem contar as canceladas** pelo cliente. O período é fixo em 30 dias (o seletor "Últimos 30 dias" do Figma é só um rótulo). | Uma solicitação cancelada antes de a empresa abrir não deveria baixar a taxa. Seletor de período não está no plano. |
+| 47 | Faixas de orçamento fixas (até 5 mil, 5–10, 10–20, 20–50, acima de 50 mil, "Prefiro não informar"), gravadas como mínimo e máximo. | O Figma mostra um seletor de faixa; guardar números permite filtros futuros. |
+| 48 | O pedido tem 3 etapas: **dados → revisão → confirmação**, como a barra de 3 partes do Figma. Inspirações são enviadas depois de criar a solicitação (precisam do id). | Critério de aceite da fase. |
+| 49 | "Responder", no painel e na lista da empresa, abre o detalhe já com o formulário de proposta. Contato direto pelo WhatsApp disponível nos dois lados. | O chat em tempo real é a Fase 5. |
+| 50 | Listas, detalhe e painel sempre recarregam ao abrir a tela (`staleTime: 0`). | O status muda pelo outro lado; sem chat/push ainda, é o jeito simples de "o cliente ver a atualização". |
+| 51 | Na web, o campo de data é texto com máscara dd/mm/aaaa (o seletor nativo não existe na web). | A web serve para demonstração. |
 
 ## Pontos em aberto (aguardando o usuário)
 

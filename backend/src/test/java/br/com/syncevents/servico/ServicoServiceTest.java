@@ -37,7 +37,10 @@ class ServicoServiceTest {
     EmpresaRepository empresas = mock(EmpresaRepository.class);
     EmpresaService empresaService = mock(EmpresaService.class);
     StorageService storage = mock(StorageService.class);
-    ServicoService service = new ServicoService(repository, categorias, empresas, empresaService, storage);
+    br.com.syncevents.solicitacao.SolicitacaoRepository solicitacoes =
+            mock(br.com.syncevents.solicitacao.SolicitacaoRepository.class);
+    ServicoService service = new ServicoService(repository, categorias, empresas, empresaService, storage,
+            solicitacoes);
 
     Empresa aurora = empresa(1L, 10L);
     Empresa outra = empresa(2L, 20L);
@@ -152,6 +155,16 @@ class ServicoServiceTest {
         assertThatThrownBy(() -> service.excluir(donaOutra, 5L))
                 .isInstanceOfSatisfying(ApiException.class,
                         e -> assertThat(e.getStatus()).isEqualTo(HttpStatus.FORBIDDEN));
+        verify(repository, never()).delete(any());
+    }
+
+    @Test
+    void servicoComSolicitacoesNaoPodeSerExcluido() {
+        when(repository.buscarComDetalhes(5L)).thenReturn(Optional.of(servicoDa(aurora, 5L)));
+        when(solicitacoes.servicoTemSolicitacoes(5L)).thenReturn(true);
+        assertThatThrownBy(() -> service.excluir(donaAurora, 5L))
+                .isInstanceOfSatisfying(ApiException.class,
+                        e -> assertThat(e.getStatus()).isEqualTo(HttpStatus.CONFLICT));
         verify(repository, never()).delete(any());
     }
 

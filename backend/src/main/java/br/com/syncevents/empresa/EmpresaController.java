@@ -24,6 +24,8 @@ import br.com.syncevents.common.Pagina;
 import br.com.syncevents.empresa.dto.EmpresaPerfilResponse;
 import br.com.syncevents.empresa.dto.EmpresaUpdateRequest;
 import br.com.syncevents.servico.ServicoService;
+import br.com.syncevents.solicitacao.SolicitacaoService;
+import br.com.syncevents.solicitacao.dto.DashboardResponse;
 import br.com.syncevents.servico.dto.ServicoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,11 +39,20 @@ public class EmpresaController {
     private final EmpresaService service;
     private final ServicoService servicoService;
     private final BuscaService buscaService;
+    private final SolicitacaoService solicitacaoService;
 
-    public EmpresaController(EmpresaService service, ServicoService servicoService, BuscaService buscaService) {
+    public EmpresaController(EmpresaService service, ServicoService servicoService, BuscaService buscaService,
+            SolicitacaoService solicitacaoService) {
         this.service = service;
         this.servicoService = servicoService;
         this.buscaService = buscaService;
+        this.solicitacaoService = solicitacaoService;
+    }
+
+    @GetMapping("/me/dashboard")
+    @Operation(summary = "Painel da empresa: visualizações, solicitações e taxa de resposta (30 dias)")
+    public DashboardResponse dashboard(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return solicitacaoService.dashboard(usuario);
     }
 
     @GetMapping

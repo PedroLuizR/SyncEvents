@@ -222,6 +222,65 @@ Ao subir no perfil `dev`, o backend cria (uma única vez) 10 empresas com logo, 
 **marina@demo.syncevents.com**. Todas as contas usam a senha **Senha@123**; os e-mails das empresas terminam em
 `@...demo.syncevents.com` (ex.: `contato@aurora.demo.syncevents.com`). Para desligar: `APP_SEED_DEMO=false`.
 
+## Fase 4: orçamentos e gestão
+
+### Máquina de estados
+
+```
+PENDENTE ──► EM_ANALISE ──► EM_NEGOCIACAO (proposta enviada) ──► ACEITA ──► CONCLUIDA
+    └────────────┴───────────────┴──► RECUSADA   (empresa)
+    └────────────┴───────────────┴──► CANCELADA  (cliente, antes de ACEITA)
+```
+
+| Ação | Quem | Rota | Permitido a partir de | Resultado |
+|---|---|---|---|---|
+| Criar | cliente | `POST /solicitacoes` | — | `PENDENTE` + conversa criada |
+| Em análise | empresa | `PATCH /solicitacoes/{id}/status` `{status: EM_ANALISE}` | PENDENTE | `EM_ANALISE` |
+| Proposta | empresa | `POST /solicitacoes/{id}/propostas` `{valor, descricao}` | PENDENTE, EM_ANALISE, EM_NEGOCIACAO (sem outra em aberto) | `EM_NEGOCIACAO` |
+| Aceitar proposta | cliente | `PATCH /propostas/{id}` `{status: ACEITA}` | EM_NEGOCIACAO | `ACEITA` |
+| Recusar proposta | cliente | `PATCH /propostas/{id}` `{status: RECUSADA}` | EM_NEGOCIACAO | continua `EM_NEGOCIACAO` (a empresa pode propor de novo) |
+| Recusar pedido | empresa | `PATCH /solicitacoes/{id}/status` `{status: RECUSADA}` | PENDENTE, EM_ANALISE, EM_NEGOCIACAO | `RECUSADA` |
+| Concluir | empresa | `PATCH /solicitacoes/{id}/status` `{status: CONCLUIDA}` | ACEITA | `CONCLUIDA` |
+| Cancelar | cliente | `PATCH /solicitacoes/{id}/cancelar` | PENDENTE, EM_ANALISE, EM_NEGOCIACAO | `CANCELADA` |
+
+Qualquer outra transição responde **409** (`erro: "CONFLITO"`), por exemplo "Não é possível mudar de pendente para concluída".
+Quem não participa da solicitação recebe **403**.
+
+### `POST /solicitacoes` (cliente) — ID08
+
+```json
+{
+  "empresaId": 7, "tipoEvento": "CASAMENTO", "dataEvento": "2027-10-16", "qtdConvidados": 120,
+  "local": "Espaço Jardim das Oliveiras, Cotia", "servicoIds": [12, 13],
+  "orcamentoMin": 10000, "orcamentoMax": 20000, "mensagem": "...", "aceiteContato": true
+}
+```
+
+Regras: data de hoje em diante, convidados ≥ 1, serviços **publicados da própria empresa**, máximo ≥ mínimo, `aceiteContato` obrigatório.
+Inspirações: `POST /solicitacoes/{id}/anexos` (multipart `arquivo`, até 5).
+
+### `GET /solicitacoes/me?status=PENDENTE,EM_ANALISE`
+
+Cliente: as suas (mais recentes primeiro). Empresa: as recebidas. Na lista, `propostaAtual` traz a última proposta.
+
+### `GET /solicitacoes/{id}`
+
+Detalhe com `cliente` (nome, cidade, telefone, e-mail), `empresa`, `servicos`, `anexos`, `propostas` e `conversaId`.
+
+### `GET /empresas/me/dashboard` (empresa)
+
+```json
+{ "dias": 30, "visualizacoes": 1248, "variacaoVisualizacoes": 18, "solicitacoes": 24,
+  "variacaoSolicitacoes": 12, "taxaResposta": 92, "pendentes": 2, "servicosAtivos": 6, "servicosRascunho": 1 }
+```
+
+- **Visualizações**: aberturas do perfil por clientes nos últimos 30 dias; variação em relação aos 30 dias anteriores (`null` se o período anterior foi zero).
+- **Solicitações**: recebidas nos últimos 30 dias, com a mesma comparação.
+- **Taxa de resposta**: % das solicitações do período que saíram de `PENDENTE`, sem contar as canceladas pelo cliente (`null` sem solicitações).
+
+O perfil público passa a mostrar `indicadores.eventosRealizados` (solicitações concluídas).
+Um serviço que aparece em alguma solicitação não pode mais ser excluído (**409**); use "desativar".
+
 ## Erros de validação (exemplos)
 
 ```json

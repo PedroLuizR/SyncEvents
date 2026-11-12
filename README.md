@@ -14,8 +14,9 @@ App Android que conecta **clientes** a **empresas organizadoras de eventos**: bu
 | 1 | Autenticação e cadastros (boas-vindas, login, cadastro de cliente e de empresa) | ✅ |
 | 2 | Empresa: perfil (logo, capa, portfólio) e serviços (criar, editar, rascunho, ativar/desativar, excluir) | ✅ |
 | 3 | Cliente: Início, busca com filtros e perfil da empresa; dados de demonstração | ✅ |
-| 4 | Orçamentos e painel da empresa | ⏳ |
-| 5 a 7 | Ver o plano | — |
+| 4 | Pedido de orçamento, propostas, gestão pela empresa, painel com indicadores e "Minhas solicitações" | ✅ |
+| 5 | Chat | ⏳ |
+| 6 a 7 | Ver o plano | — |
 
 ## Pré-requisitos
 

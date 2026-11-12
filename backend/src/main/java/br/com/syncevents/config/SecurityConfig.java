@@ -56,6 +56,13 @@ public class SecurityConfig {
                         // Descoberta: busca e recomendados são do cliente
                         .requestMatchers(HttpMethod.GET, "/api/v1/empresas", "/api/v1/empresas/recomendadas")
                         .hasRole("CLIENTE")
+                        // Solicitações: cliente cria, anexa, cancela e responde; empresa muda status e propõe
+                        .requestMatchers(HttpMethod.POST, "/api/v1/solicitacoes", "/api/v1/solicitacoes/*/anexos")
+                        .hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/solicitacoes/*/cancelar", "/api/v1/propostas/*")
+                        .hasRole("CLIENTE")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/solicitacoes/*/status").hasRole("EMPRESA")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/solicitacoes/*/propostas").hasRole("EMPRESA")
                         .requestMatchers(HttpMethod.POST, "/api/v1/servicos/**").hasRole("EMPRESA")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/servicos/**").hasRole("EMPRESA")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/servicos/**").hasRole("EMPRESA")

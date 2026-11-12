@@ -19,7 +19,6 @@ import type { EmpresaPublica, Servico } from '@/api/types';
 import { Avatar, Button, Card, EmptyState, Header, Nota, SectionHeader, Text } from '@/components';
 import { useEmpresaPublica } from '@/hooks/useBusca';
 import { colors, fonts, radii, shadows, spacing, touchTarget } from '@/theme';
-import { emBreve } from '@/utils/emBreve';
 import { linkWhatsapp } from '@/utils/whatsapp';
 import { formatarPrecoServico } from '@/utils/servico';
 
@@ -198,7 +197,7 @@ function Conteudo({ e }: { e: EmpresaPublica }) {
           titulo="Solicitar orçamento"
           icone="file-text"
           larguraTotal
-          onPress={() => emBreve('A solicitação de orçamento')}
+          onPress={() => router.push(`/cliente/orcamento/${e.id}`)}
         />
       </View>
     </View>

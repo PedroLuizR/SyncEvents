@@ -26,10 +26,7 @@ public record EmpresaPublicaResponse(
         long totalAvaliacoes,
         Indicadores indicadores) {
 
-    /**
-     * Indicadores exibidos no perfil. {@code eventosRealizados} passa a ser preenchido na Fase 4
-     * (solicitações concluídas); até lá é 0.
-     */
+    /** Indicadores exibidos no perfil. {@code eventosRealizados} = solicitações concluídas. */
     public record Indicadores(long eventosRealizados, int servicos, int fotos, int naPlataformaDesde) {
     }
 }

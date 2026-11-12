@@ -20,6 +20,7 @@ import br.com.syncevents.empresa.EmpresaRepository;
 import br.com.syncevents.empresa.EmpresaService;
 import br.com.syncevents.servico.dto.ServicoRequest;
 import br.com.syncevents.servico.dto.ServicoResponse;
+import br.com.syncevents.solicitacao.SolicitacaoRepository;
 import br.com.syncevents.storage.StorageService;
 import br.com.syncevents.usuario.TipoUsuario;
 
@@ -33,14 +34,17 @@ public class ServicoService {
     private final EmpresaRepository empresaRepository;
     private final EmpresaService empresaService;
     private final StorageService storage;
+    private final SolicitacaoRepository solicitacaoRepository;
 
     public ServicoService(ServicoRepository repository, CategoriaRepository categoriaRepository,
-            EmpresaRepository empresaRepository, EmpresaService empresaService, StorageService storage) {
+            EmpresaRepository empresaRepository, EmpresaService empresaService, StorageService storage,
+            SolicitacaoRepository solicitacaoRepository) {
         this.repository = repository;
         this.categoriaRepository = categoriaRepository;
         this.empresaRepository = empresaRepository;
         this.empresaService = empresaService;
         this.storage = storage;
+        this.solicitacaoRepository = solicitacaoRepository;
     }
 
     @Transactional(readOnly = true)
@@ -86,6 +90,9 @@ public class ServicoService {
     @Transactional
     public void excluir(UsuarioAutenticado usuario, Long id) {
         Servico servico = daDona(usuario, id);
+        if (solicitacaoRepository.servicoTemSolicitacoes(id)) {
+            throw ApiException.conflito("Este serviço aparece em solicitações de clientes. Desative-o em vez de excluir.");
+        }
         List<String> urls = servico.getFotos().stream().map(ServicoFoto::getUrl).toList();
         repository.delete(servico);
         urls.forEach(storage::remover);
