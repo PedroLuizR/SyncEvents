@@ -1,102 +1,135 @@
 # SyncEvents
 
-App Android que conecta **clientes** a **empresas organizadoras de eventos**: busca de empresas, solicitação de orçamento, chat e avaliações.
+App Android que conecta **clientes** que estão organizando um evento a **empresas organizadoras e prestadores de serviço**:
+o cliente encontra empresas, pede orçamento, conversa em tempo real e recebe propostas; a empresa divulga seus serviços,
+responde pedidos e acompanha seus indicadores.
 
-- **Mobile:** React Native (Expo SDK 58) + TypeScript + Expo Router (`mobile/`)
-- **Backend:** Java 21 + Spring Boot 3.5 + PostgreSQL 16 + Flyway (`backend/`)
-- **Plano completo:** [`SYNCEVENTS_PLANO.md`](SYNCEVENTS_PLANO.md) · decisões: [`docs/decisoes.md`](docs/decisoes.md) · API: [`docs/api.md`](docs/api.md)
+| | |
+|---|---|
+| **Mobile** | React Native (Expo SDK 58) · TypeScript · Expo Router · TanStack Query · Zustand · react-hook-form + zod · STOMP |
+| **Backend** | Java 21 · Spring Boot 3.5 (Web, Security, Data JPA, WebSocket) · JWT · PostgreSQL 16 · Flyway |
+| **Testes** | JUnit 5 · Mockito · Testcontainers · MockMvc · Jest · React Native Testing Library · Maestro |
+
+<p>
+  <img src="docs/telas/fase-1-01-boas-vindas.png" width="180" alt="Boas-vindas">
+  <img src="docs/telas/fase-3-01-inicio.png" width="180" alt="Início do cliente">
+  <img src="docs/telas/fase-3-05-perfil.png" width="180" alt="Perfil da empresa">
+  <img src="docs/telas/fase-5-04-chat-cliente-tempo-real.png" width="180" alt="Chat">
+  <img src="docs/telas/fase-4-06-painel.png" width="180" alt="Painel da empresa">
+</p>
 
 ## Status
 
-| Fase | Conteúdo | Status |
-|---|---|---|
-| 0 | Fundação (infra, backend base, app base, design system) | ✅ |
-| 1 | Autenticação e cadastros (boas-vindas, login, cadastro de cliente e de empresa) | ✅ |
-| 2 | Empresa: perfil (logo, capa, portfólio) e serviços (criar, editar, rascunho, ativar/desativar, excluir) | ✅ |
-| 3 | Cliente: Início, busca com filtros e perfil da empresa; dados de demonstração | ✅ |
-| 4 | Pedido de orçamento, propostas, gestão pela empresa, painel com indicadores e "Minhas solicitações" | ✅ |
-| 5 | Chat | ⏳ |
-| 6 a 7 | Ver o plano | — |
+| Fase | Entrega | Histórias | Status |
+|---|---|---|---|
+| 0 | Fundação: monorepo, Docker, backend base, app base e design system | — | ✅ |
+| 1 | Boas-vindas, login (e-mail ou CNPJ) e cadastro de cliente e de empresa | ID01, ID02, ID03 | ✅ |
+| 2 | Perfil da empresa (logo, capa, portfólio) e serviços (rascunho, ativo/inativo) | ID04, ID05 | ✅ |
+| 3 | Início do cliente, busca com filtros, perfil público da empresa, dados de demonstração | ID06, ID07 | ✅ |
+| 4 | Pedido de orçamento, propostas, gestão pela empresa, painel com indicadores | ID08, ID10 | ✅ |
+| 5 | Chat em tempo real (WebSocket/STOMP) com propostas na conversa | ID09 | ✅ |
+| 6 | Avaliações (nota, destaques, média no perfil) | ID11 | ⏳ |
+| 7 | Acabamento: revisão visual, acessibilidade, fluxos Maestro completos, APK de release | — | ⏳ |
 
-## Pré-requisitos
+Números atuais: **149 testes no backend** (93 unitários + 56 de integração com Postgres real) e **146 no mobile**,
+todos passando, com typecheck, lint e Prettier sem erros.
 
-- Docker (para o PostgreSQL)
-- Java 21 e Maven 3.9+
-- Node 20+ e npm
-- Android Studio com um emulador (ou um aparelho com o Expo Go / dev build)
+## Funcionalidades
+
+**Cliente**
+- Cadastro em 2 etapas (CPF e foto opcionais) e login; sessão salva com segurança (SecureStore).
+- Início com busca, categorias, banner e empresas recomendadas para a sua cidade.
+- Busca por nome, serviço ou categoria (sem acento), com filtro por categoria e cidade, ordenação e rolagem infinita.
+- Perfil da empresa com portfólio, serviços e preços, indicadores, WhatsApp e compartilhar.
+- Pedido de orçamento em 3 etapas (dados → revisão → enviado), com fotos de inspiração.
+- "Minhas solicitações" por status; aceitar ou recusar propostas; cancelar o pedido.
+- Chat em tempo real com cada empresa, com a proposta aparecendo como card na conversa.
+
+**Empresa**
+- Cadastro em 2 etapas com código público de 6 dígitos; login por e-mail ou CNPJ.
+- Perfil editável (logo, capa, contatos, endereço, categorias e portfólio de até 12 fotos).
+- Serviços com fotos, modelos de preço (fixo, a partir de, faixa, sob consulta), itens inclusos, rascunho e ativo/inativo.
+- Painel com visualizações do perfil, solicitações e taxa de resposta dos últimos 30 dias (com variação).
+- Gestão das solicitações: em análise, proposta, recusa e conclusão (máquina de estados validada no backend).
+- Chat em tempo real com cada cliente.
 
 ## Como rodar
 
-### 1. Banco de dados
+**Pré-requisitos:** Docker · Java 21 + Maven 3.9 · Node 20+ · Android Studio com emulador (ou aparelho).
 
 ```bash
+# 1. Banco de dados
 cp .env.example .env
 docker compose up -d postgres
-```
 
-pgAdmin (opcional): `docker compose --profile tools up -d` → http://localhost:5050 (`admin@syncevents.local` / `admin`).
-
-### 2. Backend
-
-```bash
+# 2. Backend (perfil dev: migrations + dados de demonstração na primeira vez)
 cd backend
 mvn spring-boot:run
-```
 
-- API: http://localhost:8080/api/v1
-- Saúde: http://localhost:8080/actuator/health
-- Swagger: http://localhost:8080/swagger-ui.html
-
-O perfil `dev` é o padrão e conecta em `localhost:5432/syncevents` (usuário e senha `syncevents`). As variáveis estão em `backend/.env.example`. O Flyway aplica as migrations ao subir. Em produção, defina `APP_JWT_SECRET` (mínimo de 32 caracteres).
-
-### 3. Mobile
-
-```bash
+# 3. App (em outro terminal)
 cd mobile
 cp .env.example .env
 npm install
-npx expo run:android
+npx expo run:android      # ou: npx expo start --web  (só para ver a interface no navegador)
 ```
 
-`EXPO_PUBLIC_API_URL` no `.env`: `http://10.0.2.2:8080` no emulador Android; em aparelho físico, use o IP da sua máquina na rede.
+| Endereço | O quê |
+|---|---|
+| http://localhost:8080/api/v1 | API REST |
+| ws://localhost:8080/ws | WebSocket (STOMP) do chat |
+| http://localhost:8080/swagger-ui.html | Documentação interativa da API |
+| http://localhost:8080/actuator/health | Saúde do backend |
 
-Para só ver a interface no navegador: `npx expo start --web`.
+- `EXPO_PUBLIC_API_URL` (em `mobile/.env`): `http://10.0.2.2:8080` no emulador Android; num aparelho físico, o IP da sua máquina.
+- Variáveis do backend em `backend/.env.example`. Fora do perfil `dev`, `APP_JWT_SECRET` (32+ caracteres) é obrigatório.
+- pgAdmin opcional: `docker compose --profile tools up -d` → http://localhost:5050.
 
 ### Contas de demonstração (perfil `dev`)
 
-Na primeira vez que o backend sobe no perfil `dev`, ele cria 10 empresas com serviços e fotos:
+| Perfil | Login | Senha |
+|---|---|---|
+| Cliente | `marina@demo.syncevents.com` | `Senha@123` |
+| Empresa | `contato@aurora.demo.syncevents.com` | `Senha@123` |
 
-- Cliente: `marina@demo.syncevents.com` / `Senha@123`
-- Empresa: `contato@aurora.demo.syncevents.com` / `Senha@123` (as outras seguem o mesmo padrão, ver `DemoSeeder.java`)
+São criadas 10 empresas com logo, capa, portfólio e serviços (lista em
+[`DemoSeeder.java`](backend/src/main/java/br/com/syncevents/seed/DemoSeeder.java)). Para desligar: `APP_SEED_DEMO=false`.
 
-## Testes e qualidade
+## Testes
 
 ```bash
-# Backend: testes unitários + integração (Testcontainers, precisa do Docker)
-cd backend && mvn verify
+cd backend && mvn verify                       # unitários + integração (Testcontainers; precisa do Docker)
+TEST_DB_URL=jdbc:postgresql://localhost:5432/syncevents_test mvn verify   # sem Docker
 
-# Sem Docker: aponte para um Postgres existente
-TEST_DB_URL=jdbc:postgresql://localhost:5432/syncevents_test mvn verify
-
-# Mobile
 cd mobile
-npm test
-npm run typecheck
-npm run lint
-npx prettier --check .
-
-# E2E (Maestro, com o app instalado no emulador)
-maestro test e2e/
+npm test && npm run typecheck && npm run lint && npx prettier --check .
+maestro test e2e/                              # E2E com o app instalado no emulador
 ```
 
-## Telas
+O que cada suíte cobre: [`docs/testes.md`](docs/testes.md).
 
-Prints de cada fase em [`docs/telas/`](docs/telas/).
+## Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [`docs/arquitetura.md`](docs/arquitetura.md) | Visão geral, pacotes, telas, modelo de dados, fluxos de autenticação, orçamento e chat (com diagramas) |
+| [`docs/api.md`](docs/api.md) | Contrato da API REST e do WebSocket, fase a fase, com exemplos e regras |
+| [`docs/decisoes.md`](docs/decisoes.md) | Todas as decisões tomadas e diferenças em relação ao Figma (60 itens) |
+| [`docs/testes.md`](docs/testes.md) | Estratégia de testes e o que cada suíte verifica |
+| [`docs/telas/`](docs/telas/) | Prints de cada fase rodando contra o backend real |
+| [`SYNCEVENTS_PLANO.md`](SYNCEVENTS_PLANO.md) | Plano original de implementação (produto, regras, fases) |
 
 ## Estrutura
 
 ```
-backend/   Spring Boot (pacotes por domínio em br.com.syncevents.*)
-mobile/    Expo: rotas em src/app/, design system em src/components/, tokens em src/theme/
-docs/      design (Figma), api.md, decisoes.md
+syncevents/
+├── docker-compose.yml        PostgreSQL 16 (+ pgAdmin opcional)
+├── backend/                  Spring Boot, pacote por domínio em br.com.syncevents.*
+│   └── src/main/resources/db/migration   V1…V6 (Flyway)
+├── mobile/                   Expo
+│   ├── src/app/              rotas (Expo Router): (auth), cliente, empresa, chat, conversas
+│   ├── src/components/       design system
+│   ├── src/api · hooks/      cliente HTTP e hooks do TanStack Query
+│   ├── src/theme/            tokens (cores, tipografia, espaçamentos)
+│   └── e2e/                  fluxos Maestro por fase
+└── docs/                     arquitetura, API, decisões, testes, design e prints
 ```

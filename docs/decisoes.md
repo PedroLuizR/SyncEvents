@@ -1,5 +1,7 @@
 # Registro de decisões
 
+Todas as escolhas feitas durante o desenvolvimento, principalmente onde o plano estava em aberto ou onde a implementação difere do Figma. Numeradas em ordem; itens atualizados em fases seguintes dizem isso no próprio texto.
+
 ## Fase 0
 
 | # | Decisão | Motivo |
