@@ -14,6 +14,7 @@ import { urlArquivo } from '@/api/arquivos';
 import { mensagemDeErro } from '@/api/client';
 import {
   Avatar,
+  BotaoConversas,
   Button,
   Card,
   EmptyState,
@@ -73,6 +74,7 @@ export default function PainelEmpresaScreen() {
               Olá, {usuario?.nome}
             </Text>
           </View>
+          <BotaoConversas />
           {usuario ? (
             <Pressable
               onPress={() => router.navigate('/empresa/perfil')}

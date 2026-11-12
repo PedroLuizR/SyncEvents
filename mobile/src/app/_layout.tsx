@@ -37,6 +37,12 @@ function Navegacao() {
       <Stack.Protected guard={tipo === 'EMPRESA'}>
         <Stack.Screen name="empresa" />
       </Stack.Protected>
+
+      {/* Compartilhado pelos dois perfis */}
+      <Stack.Protected guard={!!usuario}>
+        <Stack.Screen name="conversas" />
+        <Stack.Screen name="chat/[conversaId]" />
+      </Stack.Protected>
     </Stack>
   );
 }

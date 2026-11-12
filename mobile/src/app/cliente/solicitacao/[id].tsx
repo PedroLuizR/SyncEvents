@@ -128,6 +128,17 @@ export default function DetalheSolicitacaoClienteScreen() {
         </View>
       </Card>
 
+      {s.conversaId ? (
+        <Button
+          testID="abrir-conversa"
+          titulo="Conversar com a empresa"
+          variante="secundario"
+          icone="message-circle"
+          larguraTotal
+          onPress={() => router.push(`/chat/${s.conversaId}`)}
+        />
+      ) : null}
+
       <Banner
         tipo={s.status === 'ACEITA' || s.status === 'CONCLUIDA' ? 'sucesso' : 'info'}
         mensagem={TEXTO_STATUS[s.status]}

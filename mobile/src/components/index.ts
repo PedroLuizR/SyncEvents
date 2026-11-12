@@ -34,3 +34,5 @@ export * from './SolicitacaoCard';
 export * from './StatusSolicitacaoBadge';
 export * from './DetalheSolicitacao';
 export * from './FormProposta';
+export * from './BolhaMensagem';
+export * from './BotaoConversas';

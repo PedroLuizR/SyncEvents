@@ -176,3 +176,34 @@ export interface Dashboard {
   servicosAtivos: number;
   servicosRascunho: number;
 }
+
+export interface Mensagem {
+  id: number;
+  conversaId: number;
+  remetenteUsuarioId: number;
+  tipo: 'TEXTO' | 'PROPOSTA';
+  conteudo: string;
+  proposta?: Proposta;
+  lida: boolean;
+  enviadaEm: string;
+}
+
+export interface Historico {
+  /** ordem cronológica (mais antiga primeiro) */
+  mensagens: Mensagem[];
+  temMais: boolean;
+}
+
+export interface Conversa {
+  id: number;
+  solicitacaoId: number;
+  contato: { id: number; nome: string; fotoUrl?: string; cidade: string };
+  status: StatusSolicitacao;
+  tipoEvento: TipoEvento;
+  dataEvento: string;
+  qtdConvidados: number;
+  local: string;
+  ultimaMensagem?: Mensagem;
+  naoLidas: number;
+  meuUsuarioId: number;
+}

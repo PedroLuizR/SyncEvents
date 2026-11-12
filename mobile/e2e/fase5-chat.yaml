@@ -1,0 +1,33 @@
+# Fase 5: cliente abre a conversa de um pedido e envia uma mensagem.
+# Pré-requisitos: backend no perfil dev, app instalado e ao menos uma solicitação da cliente demo.
+# Para ver o tempo real, abra a mesma conversa como empresa em outro aparelho/emulador.
+# Rodar:  maestro test e2e/fase5-chat.yaml
+appId: br.com.syncevents
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: 'continuar'
+- tapOn:
+    id: 'campo-login'
+- inputText: 'marina@demo.syncevents.com'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- tapOn:
+    id: 'botao-conversas'
+- assertVisible: 'Conversas'
+- tapOn:
+    id: 'conversa-.*'
+- extendedWaitUntil:
+    visible: 'Conectado em tempo real'
+    timeout: 15000
+- tapOn:
+    id: 'campo-mensagem'
+- inputText: 'Olá! Podemos marcar uma visita ao espaço?'
+- tapOn:
+    id: 'enviar-mensagem'
+- assertVisible: 'Olá! Podemos marcar uma visita ao espaço?'

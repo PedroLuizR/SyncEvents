@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Linking, StyleSheet, View } from 'react-native';
 
@@ -148,6 +148,15 @@ export default function DetalheSolicitacaoEmpresaScreen() {
               {mascaraTelefone(s.cliente.telefone)} · {s.cliente.email}
             </Text>
           </View>
+          {s.conversaId ? (
+            <Button
+              testID="abrir-conversa"
+              titulo="Abrir conversa"
+              icone="message-circle"
+              compacto
+              onPress={() => router.push(`/chat/${s.conversaId}`)}
+            />
+          ) : null}
           <Button
             titulo="Chamar no WhatsApp"
             variante="contorno"

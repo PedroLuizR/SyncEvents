@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.syncevents.auth.UsuarioAutenticado;
+import br.com.syncevents.chat.ChatService;
 import br.com.syncevents.chat.Conversa;
 import br.com.syncevents.chat.ConversaRepository;
 import br.com.syncevents.cliente.Cliente;
@@ -50,11 +51,12 @@ public class SolicitacaoService {
     private final ServicoRepository servicoRepository;
     private final VisualizacaoPerfilRepository visualizacaoRepository;
     private final StorageService storage;
+    private final ChatService chatService;
 
     public SolicitacaoService(SolicitacaoRepository repository, PropostaRepository propostaRepository,
             ConversaRepository conversaRepository, ClienteRepository clienteRepository,
             EmpresaRepository empresaRepository, EmpresaService empresaService, ServicoRepository servicoRepository,
-            VisualizacaoPerfilRepository visualizacaoRepository, StorageService storage) {
+            VisualizacaoPerfilRepository visualizacaoRepository, StorageService storage, ChatService chatService) {
         this.repository = repository;
         this.propostaRepository = propostaRepository;
         this.conversaRepository = conversaRepository;
@@ -64,6 +66,7 @@ public class SolicitacaoService {
         this.servicoRepository = servicoRepository;
         this.visualizacaoRepository = visualizacaoRepository;
         this.storage = storage;
+        this.chatService = chatService;
     }
 
     // ------------------------------------------------------------------ cliente
@@ -142,6 +145,7 @@ public class SolicitacaoService {
             s.setStatus(StatusSolicitacao.ACEITA);
         }
         repository.saveAndFlush(s);
+        chatService.propostaAtualizada(p);
         return detalhe(s);
     }
 
@@ -162,7 +166,7 @@ public class SolicitacaoService {
         return detalhe(s);
     }
 
-    /** Envia proposta: a solicitação passa para EM_NEGOCIACAO. A mensagem no chat entra na Fase 5. */
+    /** Envia proposta: a solicitação passa para EM_NEGOCIACAO e a proposta aparece no chat. */
     @Transactional
     public SolicitacaoResponse enviarProposta(UsuarioAutenticado usuario, Long id, PropostaRequest req) {
         Solicitacao s = daEmpresa(usuario, id);
@@ -174,8 +178,11 @@ public class SolicitacaoService {
         }
         s.adicionarProposta(req.valor(), req.descricao().trim());
         s.setStatus(StatusSolicitacao.EM_NEGOCIACAO);
-        repository.saveAndFlush(s);
-        return detalhe(s);
+        Solicitacao salva = repository.saveAndFlush(s);
+        // o merge devolve cópias gerenciadas: pega a proposta já persistida
+        Proposta proposta = salva.getPropostas().get(salva.getPropostas().size() - 1);
+        chatService.registrarProposta(salva, proposta);
+        return detalhe(salva);
     }
 
     @Transactional(readOnly = true)

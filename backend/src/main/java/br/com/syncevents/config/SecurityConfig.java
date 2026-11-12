@@ -31,6 +31,7 @@ public class SecurityConfig {
         "/api/v1/auth/cadastro/**",
         "/api/v1/auth/login",
         "/error",
+        "/ws", // a autenticação do WebSocket é feita no CONNECT do STOMP (WebSocketConfig)
     };
 
     @Bean

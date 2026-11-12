@@ -7,6 +7,7 @@ import { urlArquivo } from '@/api/arquivos';
 import {
   Avatar,
   BarraBusca,
+  BotaoConversas,
   CategoriaAtalho,
   EmpresaCard,
   EmptyState,
@@ -44,6 +45,7 @@ export default function InicioClienteScreen() {
               Vamos celebrar?
             </Text>
           </View>
+          <BotaoConversas />
           {usuario ? (
             <Pressable
               onPress={() => router.navigate('/cliente/perfil')}

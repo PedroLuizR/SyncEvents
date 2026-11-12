@@ -68,13 +68,27 @@
 | 42 | Novo status **CANCELADA**, para quando o cliente desiste antes de aceitar. | O plano diz que o cliente pode cancelar antes de ACEITA, mas o diagrama não tinha um estado para isso. |
 | 43 | **Recusar a proposta** não encerra o pedido: a proposta fica RECUSADA e a solicitação continua EM_NEGOCIACAO, para a empresa mandar outra. Só uma proposta pode estar aguardando resposta por vez (índice único no banco). | Recusar costuma significar "quero outro valor"; para desistir de vez existe o cancelamento. |
 | 44 | A empresa **não** passa para EM_NEGOCIACAO pelo PATCH de status: isso só acontece ao enviar uma proposta. | EM_NEGOCIACAO significa "proposta enviada" no plano. |
-| 45 | A **mensagem do tipo PROPOSTA no chat** fica para a Fase 5 (a tabela `mensagem` nasce lá). A conversa já é criada junto com a solicitação. | Segue a ordem das fases do plano. |
+| 45 | A **mensagem do tipo PROPOSTA no chat** fica para a Fase 5 (a tabela `mensagem` nasce lá). A conversa já é criada junto com a solicitação. **Feito na Fase 5**, inclusive para propostas antigas (migration V6). | Segue a ordem das fases do plano. |
 | 46 | Taxa de resposta = % das solicitações dos últimos 30 dias que saíram de PENDENTE, **sem contar as canceladas** pelo cliente. O período é fixo em 30 dias (o seletor "Últimos 30 dias" do Figma é só um rótulo). | Uma solicitação cancelada antes de a empresa abrir não deveria baixar a taxa. Seletor de período não está no plano. |
 | 47 | Faixas de orçamento fixas (até 5 mil, 5–10, 10–20, 20–50, acima de 50 mil, "Prefiro não informar"), gravadas como mínimo e máximo. | O Figma mostra um seletor de faixa; guardar números permite filtros futuros. |
 | 48 | O pedido tem 3 etapas: **dados → revisão → confirmação**, como a barra de 3 partes do Figma. Inspirações são enviadas depois de criar a solicitação (precisam do id). | Critério de aceite da fase. |
 | 49 | "Responder", no painel e na lista da empresa, abre o detalhe já com o formulário de proposta. Contato direto pelo WhatsApp disponível nos dois lados. | O chat em tempo real é a Fase 5. |
 | 50 | Listas, detalhe e painel sempre recarregam ao abrir a tela (`staleTime: 0`). | O status muda pelo outro lado; sem chat/push ainda, é o jeito simples de "o cliente ver a atualização". |
 | 51 | Na web, o campo de data é texto com máscara dd/mm/aaaa (o seletor nativo não existe na web). | A web serve para demonstração. |
+
+## Fase 5
+
+| # | Decisão | Motivo |
+|---|---|---|
+| 52 | STOMP sobre **WebSocket puro** em `/ws` (sem SockJS), com o broker simples do Spring em memória. | O React Native tem WebSocket nativo; o broker em memória basta para uma instância (para escalar, troca-se por RabbitMQ sem mudar o app). |
+| 53 | Autenticação no **CONNECT** do STOMP (JWT no cabeçalho), e checagem de participação em cada SUBSCRIBE e SEND. O HTTP de `/ws` é público. | Navegadores e o RN não mandam cabeçalhos customizados no handshake HTTP do WebSocket. |
+| 54 | As mensagens só são publicadas no tópico **depois do commit** da transação. | Evita o app receber uma mensagem que depois sofreu rollback. |
+| 55 | Proposta aceita/recusada **republica a mesma mensagem** com o status novo; o app faz "upsert" pelo id. Não existe um tipo "SISTEMA". | O plano define só TEXTO e PROPOSTA; assim o card muda de status nos dois lados em tempo real. |
+| 56 | O cliente pode **aceitar/recusar a proposta direto no card do chat** (com confirmação). "Ver proposta" abre o detalhe da solicitação. | Pedido do plano para a tela 9. |
+| 57 | Histórico paginado por **cursor** (`antesDe` = id), 30 mensagens por vez. Lista invertida que carrega as mais antigas ao rolar para cima. | Cursor não "pula" mensagens quando chegam novas durante a rolagem. |
+| 58 | A conversa é marcada como lida ao abrir e a cada mensagem recebida. A confirmação de leitura (✓ verde) do remetente atualiza quando ele reabre a conversa (não é empurrada em tempo real). | Mantém o protocolo simples; o estado no servidor está sempre correto. |
+| 59 | A lista de conversas não tem aba própria: abre pelo **ícone de conversas** (com contador de não lidas) no Início do cliente e no Painel da empresa, e pelo botão "Conversar"/"Abrir conversa" nos detalhes da solicitação. | O Figma tem 4 abas por perfil e nenhuma é de conversas. |
+| 60 | Não implementados: anexos no chat (botão "+"), mensagem de voz (microfone), indicador "digitando…" e status "online". | Fora do escopo do plano. |
 
 ## Pontos em aberto (aguardando o usuário)
 

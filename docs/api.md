@@ -281,6 +281,38 @@ Detalhe com `cliente` (nome, cidade, telefone, e-mail), `empresa`, `servicos`, `
 O perfil público passa a mostrar `indicadores.eventosRealizados` (solicitações concluídas).
 Um serviço que aparece em alguma solicitação não pode mais ser excluído (**409**); use "desativar".
 
+## Fase 5: chat
+
+Cada solicitação tem **uma conversa** (criada junto com o pedido). Só o cliente e a empresa envolvidos acessam: os outros recebem **403**.
+
+### REST
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/conversas` | conversas do usuário (mais recente primeiro) com `contato`, contexto do orçamento, `ultimaMensagem` e `naoLidas` |
+| GET | `/conversas/{id}` | uma conversa (cabeçalho do chat) |
+| GET | `/conversas/{id}/mensagens?antesDe=&size=` | histórico paginado: 30 por vez (máx. 100), em ordem cronológica; `antesDe` = id da mensagem mais antiga que o app já tem; `temMais` indica se há mais antigas |
+| POST | `/conversas/{id}/mensagens` | envia `{ "conteudo": "..." }` (fallback quando o WebSocket não está conectado) |
+| PATCH | `/conversas/{id}/lidas` | marca como lidas as mensagens recebidas → `{ "marcadas": 3 }` |
+
+```json
+{
+  "id": 42, "conversaId": 11, "remetenteUsuarioId": 7, "tipo": "PROPOSTA",
+  "conteudo": "Pacote completo", "proposta": { "id": 90, "valor": 10500, "descricao": "...", "status": "ENVIADA" },
+  "lida": false, "enviadaEm": "2026-11-12T20:41:00Z"
+}
+```
+
+### WebSocket (STOMP)
+
+- Endpoint: **`/ws`** (WebSocket puro, sem SockJS). No emulador: `ws://10.0.2.2:8080/ws`.
+- `CONNECT` com o cabeçalho STOMP `Authorization: Bearer <jwt>`. Sem token válido, a conexão é recusada.
+- Assinar **`/topic/conversas/{id}`** e enviar para **`/app/conversas/{id}`** com `{ "conteudo": "..." }`.
+  Assinar ou enviar para uma conversa da qual não participa encerra a sessão.
+- Tudo o que acontece na conversa é publicado no tópico como `Mensagem`: textos enviados por STOMP **ou** REST,
+  propostas enviadas e propostas aceitas/recusadas (a mesma mensagem chega de novo com o status novo; o app substitui pelo `id`).
+- Heartbeat de 10 s. O app reconecta sozinho a cada 5 s e, enquanto estiver desconectado, recarrega o histórico a cada 5 s (polling).
+
 ## Erros de validação (exemplos)
 
 ```json
