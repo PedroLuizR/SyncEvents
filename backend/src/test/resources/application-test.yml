@@ -1,0 +1,4 @@
+logging:
+  level:
+    br.com.syncevents: INFO
+    org.testcontainers: WARN

@@ -1,0 +1,14 @@
+# Ambiente
+.env
+!.env.example
+
+# Backend
+backend/target/
+backend/uploads/
+*.log
+
+# IDEs / SO
+.idea/
+.vscode/
+*.iml
+.DS_Store

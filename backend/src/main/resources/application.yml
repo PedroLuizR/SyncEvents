@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: syncevents
+  profiles:
+    default: dev
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 30MB
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: America/Sao_Paulo
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+app:
+  cors:
+    allowed-origins: ${APP_CORS_ORIGINS:http://localhost:8081,http://localhost:19006}
+  storage:
+    diretorio: ${APP_STORAGE_DIR:uploads}

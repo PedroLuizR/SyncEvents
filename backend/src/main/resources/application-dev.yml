@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/syncevents}
+    username: ${DB_USER:syncevents}
+    password: ${DB_PASSWORD:syncevents}
+
+logging:
+  level:
+    br.com.syncevents: DEBUG

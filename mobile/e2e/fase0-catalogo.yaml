@@ -1,0 +1,10 @@
+# Smoke test da Fase 0: o app abre no catálogo de componentes.
+# Rodar com o app instalado no emulador:  maestro test e2e/fase0-catalogo.yaml
+appId: br.com.syncevents
+---
+- launchApp
+- assertVisible: 'Catálogo de componentes'
+- tapOn: 'Buffet'
+- tapOn:
+    id: 'tab-buscar'
+- assertVisible: 'Buscar'
