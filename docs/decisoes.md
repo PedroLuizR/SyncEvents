@@ -15,9 +15,26 @@
 | 9 | Na web, a sessão fica só em memória (o SecureStore não existe lá). | A web serve só para visualizar a interface; o alvo é Android. |
 | 10 | O componente `TabBar` só desenha a barra; é ligado ao navegador de abas a partir da Fase 1/2. | Mantém o componente testável e independente de rotas. |
 
+## Fase 1
+
+| # | Decisão | Motivo |
+|---|---|---|
+| 11 | **Cadastro de cliente em 2 etapas:** etapa 1 igual ao Figma; etapa 2 com **CPF (opcional, sem validação)** e **foto (opcional)**. | Resposta do usuário: projeto simples, para apresentação. |
+| 12 | **Cadastro de empresa em 2 etapas:** etapa 1 igual ao Figma; etapa 2 com senha, confirmação de senha, **endereço (opcional, sem verificação)** e aceite dos termos. | O Figma não tem campo de senha para a empresa; o endereço segue a resposta do usuário e pode ser editado depois no perfil (Fase 2). |
+| 13 | O CNPJ **continua com validação** dos dígitos verificadores. | Está no plano e no critério de aceite ("CNPJ inválido mostra mensagem clara"). A dispensa de validação foi só para o CPF. Se quiser tirar, basta remover `@Cnpj` no backend e o `refine` no schema. |
+| 14 | Os cadastros usam `multipart/form-data` com campos simples (não JSON). | Envia a foto/logo na mesma requisição e funciona bem com o `FormData` do React Native. |
+| 15 | O cadastro não devolve token: o app volta ao login com "Cadastro realizado!" e o e-mail preenchido. | Pedido do plano. |
+| 16 | Login na aba errada (senha certa) responde "Esta conta é de cliente. Entre pela aba Cliente.". Senha errada e usuário inexistente têm a **mesma** mensagem. | Mensagem clara sem revelar quais e-mails existem. |
+| 17 | Cidade é texto livre (ex.: "São Paulo, SP"). No Figma ela tem uma seta de lista, mas não há lista de cidades definida. A UF é extraída quando vem depois da vírgula. | A opção mais simples; dá para trocar por um seletor depois. |
+| 18 | As áreas logadas ficam em `src/app/cliente/` e `src/app/empresa/` (pastas comuns, não grupos com parênteses). | Com grupos, `(cliente)/(tabs)/index` e `(empresa)/(tabs)/index` teriam a mesma URL `/` (e o mesmo valia para `/perfil` e `/solicitacoes`), o que o Expo Router não permite. |
+| 19 | O acesso às áreas é controlado com `Stack.Protected` no layout raiz: sem login mostra boas-vindas/login/cadastros; com login, só a área do perfil do usuário. | Redireciona sozinho após login e logout. |
+| 20 | A foto da tela de boas-vindas foi substituída por um fundo bordô com "luzes" desfocadas. | Não temos a foto original. Basta exportar a imagem do Figma e trocar em `HeroBoasVindas.tsx`. |
+| 21 | Uploads gravados em `backend/uploads/` e servidos em `/files/**`, atrás da interface `StorageService` (adiantado da Fase 2). | O logo e a foto já são enviados no cadastro. |
+| 22 | O catálogo de componentes saiu da rota `/` e foi para `/catalogo`. | `/` agora é a tela de boas-vindas. |
+
 ## Pontos em aberto (aguardando o usuário)
 
-1. **Cadastro de cliente, "Etapa 1 de 2":** proposta: a etapa 2 coleta CPF (opcional) e foto.
-2. **Endereço da empresa:** proposta: cidade obrigatória; endereço opcional, editável no perfil.
+1. ~~Cadastro de cliente, etapa 2~~ → decidido (decisão 11).
+2. ~~Endereço da empresa~~ → decidido (decisão 12).
 3. **Diagrama de classes (`APP_EVENTOS.pdf`):** não fornecido; o modelo segue a seção 6 do plano.
-4. **Link do Figma:** não existe; usando a imagem (ver decisão 1).
+4. **Link do Figma:** não existe; usando a imagem (decisão 1).

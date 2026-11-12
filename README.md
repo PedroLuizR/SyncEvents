@@ -11,8 +11,9 @@ App Android que conecta **clientes** a **empresas organizadoras de eventos**: bu
 | Fase | Conteúdo | Status |
 |---|---|---|
 | 0 | Fundação (infra, backend base, app base, design system) | ✅ |
-| 1 | Autenticação e cadastros | ⏳ |
-| 2 a 7 | Ver o plano | — |
+| 1 | Autenticação e cadastros (boas-vindas, login, cadastro de cliente e de empresa) | ✅ |
+| 2 | Empresa: perfil e serviços | ⏳ |
+| 3 a 7 | Ver o plano | — |
 
 ## Pré-requisitos
 
@@ -43,7 +44,7 @@ mvn spring-boot:run
 - Saúde: http://localhost:8080/actuator/health
 - Swagger: http://localhost:8080/swagger-ui.html
 
-O perfil `dev` é o padrão e conecta em `localhost:5432/syncevents` (usuário e senha `syncevents`). As variáveis estão em `backend/.env.example`. O Flyway aplica as migrations ao subir.
+O perfil `dev` é o padrão e conecta em `localhost:5432/syncevents` (usuário e senha `syncevents`). As variáveis estão em `backend/.env.example`. O Flyway aplica as migrations ao subir. Em produção, defina `APP_JWT_SECRET` (mínimo de 32 caracteres).
 
 ### 3. Mobile
 
@@ -77,6 +78,10 @@ npx prettier --check .
 # E2E (Maestro, com o app instalado no emulador)
 maestro test e2e/
 ```
+
+## Telas
+
+Prints de cada fase em [`docs/telas/`](docs/telas/).
 
 ## Estrutura
 

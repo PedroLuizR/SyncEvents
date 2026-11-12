@@ -1,0 +1,13 @@
+# Smoke test: o app abre na tela de boas-vindas e alterna o perfil.
+# Rodar com o app instalado no emulador:  maestro test e2e/fase0-boas-vindas.yaml
+appId: br.com.syncevents
+---
+- launchApp:
+    clearState: true
+- assertVisible: 'Momentos especiais começam com boas escolhas.'
+- tapOn:
+    id: 'opcao-empresa'
+- assertVisible: 'Continuar como empresa'
+- tapOn:
+    id: 'opcao-cliente'
+- assertVisible: 'Continuar como cliente'

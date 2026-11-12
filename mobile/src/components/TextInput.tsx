@@ -1,6 +1,7 @@
 import { Feather } from '@expo/vector-icons';
 import { useState, type ComponentProps, type ComponentRef, type Ref } from 'react';
 import {
+  Platform,
   Pressable,
   StyleSheet,
   TextInput as RNTextInput,
@@ -39,7 +40,8 @@ export function TextInput({
   ...rest
 }: TextInputProps) {
   const [focado, setFocado] = useState(false);
-  const [oculto, setOculto] = useState(senha);
+  const [visivel, setVisivel] = useState(false);
+  const oculto = senha && !visivel;
 
   const corBorda = erro ? colors.danger : focado ? colors.primary : colors.border;
 
@@ -72,7 +74,7 @@ export function TextInput({
         />
         {senha ? (
           <Pressable
-            onPress={() => setOculto((o) => !o)}
+            onPress={() => setVisivel((v) => !v)}
             accessibilityRole="button"
             accessibilityLabel={oculto ? 'Mostrar senha' : 'Ocultar senha'}
             hitSlop={12}
@@ -108,6 +110,8 @@ const styles = StyleSheet.create({
   campoMultilinha: { alignItems: 'flex-start', paddingVertical: spacing.md },
   input: {
     flex: 1,
+    // remove o contorno de foco do navegador (a borda do campo já indica o foco)
+    ...(Platform.OS === 'web' ? { outlineWidth: 0 } : null),
     fontFamily: fonts.sans,
     fontSize: fontSizes.md,
     color: colors.text,

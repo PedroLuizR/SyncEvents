@@ -1,3 +1,9 @@
+app:
+  storage:
+    diretorio: target/test-uploads
+  jwt:
+    segredo: segredo-de-teste-com-mais-de-32-caracteres-123
+
 logging:
   level:
     br.com.syncevents: INFO

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -69,6 +70,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ApiErro> handleUpload(MaxUploadSizeExceededException ex) {
         return erro(HttpStatus.PAYLOAD_TOO_LARGE, "ARQUIVO_GRANDE", "Arquivo maior que o permitido");
+    }
+
+    /** Corrida em constraint UNIQUE (ex.: dois cadastros simultâneos com o mesmo e-mail). */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiErro> handleIntegridade(DataIntegrityViolationException ex) {
+        log.warn("Violação de integridade: {}", ex.getMostSpecificCause().getMessage());
+        return erro(HttpStatus.CONFLICT, "CONFLITO", "Registro duplicado ou inconsistente");
     }
 
     @ExceptionHandler(AccessDeniedException.class)

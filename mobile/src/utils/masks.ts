@@ -43,3 +43,12 @@ export function formatarMoeda(valor: number, opcoes: { centavos?: boolean } = {}
 export function formatarNota(nota: number): string {
   return nota.toFixed(1).replace('.', ',');
 }
+
+/** Máscara de CPF: 000.000.000-00 (sem validação dos dígitos, por decisão do projeto). */
+export function mascaraCpf(valor: string): string {
+  const d = apenasDigitos(valor).slice(0, 11);
+  return d
+    .replace(/^(\d{3})(\d)/, '$1.$2')
+    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/\.(\d{3})(\d)/, '.$1-$2');
+}

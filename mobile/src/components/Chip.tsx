@@ -11,12 +11,22 @@ export interface ChipProps {
   selecionado?: boolean;
   onPress?: () => void;
   icone?: ComponentProps<typeof Feather>['name'];
+  /** "solido" (filtros) ou "suave" (seleção em formulários, como no Figma). */
+  variante?: 'solido' | 'suave';
   testID?: string;
 }
 
 /** Chip arredondado e selecionável (filtros, categorias, tipos de evento). */
-export function Chip({ rotulo, selecionado = false, onPress, icone, testID }: ChipProps) {
-  const corTexto = selecionado ? colors.onPrimary : colors.text;
+export function Chip({
+  rotulo,
+  selecionado = false,
+  onPress,
+  icone,
+  variante = 'solido',
+  testID,
+}: ChipProps) {
+  const suave = variante === 'suave';
+  const corTexto = selecionado ? (suave ? colors.primary : colors.onPrimary) : colors.text;
   return (
     <Pressable
       testID={testID}
@@ -28,7 +38,7 @@ export function Chip({ rotulo, selecionado = false, onPress, icone, testID }: Ch
       hitSlop={{ top: 8, bottom: 8 }}
       style={({ pressed }) => [
         styles.chip,
-        selecionado ? styles.selecionado : styles.normal,
+        selecionado ? (suave ? styles.selecionadoSuave : styles.selecionado) : styles.normal,
         pressed && { opacity: 0.8 },
       ]}
     >
@@ -51,5 +61,6 @@ const styles = StyleSheet.create({
   },
   normal: { backgroundColor: colors.surface, borderColor: colors.border },
   selecionado: { backgroundColor: colors.primary, borderColor: colors.primary },
+  selecionadoSuave: { backgroundColor: colors.primarySoft, borderColor: colors.primarySoft },
   rotulo: { fontFamily: fonts.sansMedium, fontSize: fontSizes.sm },
 });

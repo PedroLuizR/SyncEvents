@@ -7,3 +7,8 @@ spring:
 logging:
   level:
     br.com.syncevents: DEBUG
+
+app:
+  jwt:
+    # só para desenvolvimento local; fora do perfil dev, APP_JWT_SECRET é obrigatório
+    segredo: ${APP_JWT_SECRET:dev-segredo-local-syncevents-troque-em-producao-0123456789}

@@ -35,6 +35,14 @@ api.interceptors.response.use(
   },
 );
 
+/** Erros de campo devolvidos pelo backend (status 400 VALIDACAO). */
+export function camposComErro(error: unknown): Record<string, string> {
+  if (isAxiosError<ApiErro>(error) && error.response?.data?.campos) {
+    return error.response.data.campos;
+  }
+  return {};
+}
+
 /** Extrai a mensagem de erro amigável de uma falha de requisição. */
 export function mensagemDeErro(error: unknown): string {
   if (isAxiosError<ApiErro>(error)) {

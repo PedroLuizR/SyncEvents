@@ -9,12 +9,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import br.com.syncevents.auth.JwtAuthFilter;
+import br.com.syncevents.auth.JwtService;
 import br.com.syncevents.common.ErroSegurancaHandler;
 
 /**
- * Segurança stateless. A autenticação JWT é adicionada na Fase 1;
- * por enquanto só as rotas públicas são liberadas e o restante responde 401.
+ * Segurança stateless com JWT. Rotas públicas liberadas; o restante exige token.
+ * O perfil do usuário vira ROLE_CLIENTE / ROLE_EMPRESA.
  */
 @Configuration
 public class SecurityConfig {
@@ -31,8 +34,8 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, ErroSegurancaHandler erroHandler)
-            throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ErroSegurancaHandler erroHandler,
+            JwtService jwtService) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
@@ -48,6 +51,7 @@ public class SecurityConfig {
                         .requestMatchers(ROTAS_PUBLICAS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categorias/**").permitAll()
                         .anyRequest().authenticated())
+                .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

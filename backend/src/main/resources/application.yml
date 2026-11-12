@@ -46,3 +46,6 @@ app:
     allowed-origins: ${APP_CORS_ORIGINS:http://localhost:8081,http://localhost:19006}
   storage:
     diretorio: ${APP_STORAGE_DIR:uploads}
+  jwt:
+    segredo: ${APP_JWT_SECRET:}
+    validade: ${APP_JWT_VALIDADE:7d}

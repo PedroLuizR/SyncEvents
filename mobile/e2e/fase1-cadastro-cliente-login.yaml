@@ -1,0 +1,59 @@
+# Fase 1: cadastrar cliente → logar.
+# Pré-requisitos: backend rodando e app instalado (npx expo run:android).
+# Rodar:  maestro test e2e/fase1-cadastro-cliente-login.yaml
+appId: br.com.syncevents
+---
+- launchApp:
+    clearState: true
+- assertVisible: 'Momentos especiais começam com boas escolhas.'
+- tapOn:
+    id: 'opcao-cliente'
+- tapOn:
+    id: 'continuar'
+- assertVisible: 'Acesse sua conta'
+- tapOn: 'Cadastre-se'
+
+# Etapa 1
+- assertVisible: 'Cadastro de cliente · etapa 1 de 2'
+- tapOn:
+    id: 'campo-nome'
+- inputText: 'Marina Alves'
+- tapOn:
+    id: 'campo-email'
+- inputRandomEmail
+- tapOn:
+    id: 'campo-telefone'
+- inputText: '11987654321'
+- tapOn:
+    id: 'campo-cidade'
+- inputText: 'São Paulo, SP'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn: 'Casamento'
+- scrollUntilVisible:
+    element:
+      id: 'aceite-termos'
+- tapOn:
+    id: 'aceite-termos'
+- tapOn:
+    id: 'continuar-cadastro'
+
+# Etapa 2 (opcional)
+- assertVisible: 'Cadastro de cliente · etapa 2 de 2'
+- tapOn:
+    id: 'criar-conta'
+
+# Volta ao login com mensagem de sucesso e o e-mail preenchido
+- assertVisible: 'Cadastro realizado! Entre com seu e-mail e senha.'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- assertVisible: 'Vamos celebrar?'
+- tapOn:
+    id: 'tab-perfil'
+- assertVisible: 'Marina Alves'
