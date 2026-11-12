@@ -32,6 +32,21 @@
 | 21 | Uploads gravados em `backend/uploads/` e servidos em `/files/**`, atrás da interface `StorageService` (adiantado da Fase 2). | O logo e a foto já são enviados no cadastro. |
 | 22 | O catálogo de componentes saiu da rota `/` e foi para `/catalogo`. | `/` agora é a tela de boas-vindas. |
 
+## Fase 2
+
+| # | Decisão | Motivo |
+|---|---|---|
+| 23 | **Rascunho** exige só nome e categoria; **publicar** exige também descrição e preço conforme o modelo. Sem modelo escolhido, o rascunho fica como "Sob consulta". | O Figma tem "Salvar rascunho" e "Atualizar serviço"; o rascunho serve para salvar um serviço incompleto. |
+| 24 | Um serviço só aparece para clientes se estiver **ativo e publicado**. A dona vê todos. | Combina a chave "ativo" do Figma com o rascunho. |
+| 25 | Modelos de preço: "A partir de" (padrão, como no Figma), "Preço fixo", "Faixa de preço" (mín. e máx.) e "Sob consulta". | Seção 6 do plano. |
+| 26 | Limites: 6 fotos por serviço (o Figma mostra "x de 6") e 12 no portfólio. | Evitar uploads sem fim; 12 é suficiente para um portfólio. |
+| 27 | No formulário de serviço, as fotos novas e removidas ficam pendentes e só são enviadas ao salvar (depois de criar o serviço, porque o upload precisa do id). No **perfil**, logo, capa e portfólio são enviados **na hora**. | No serviço, permite cancelar a edição; no perfil, cada foto é uma ação independente. |
+| 28 | E-mail e CNPJ não podem ser editados no perfil. | São as credenciais de login da empresa. |
+| 29 | Excluir serviço apaga de vez (com as fotos) após uma confirmação. Quando houver solicitações (Fase 4), a regra será revista para não quebrar o histórico. | Hoje nada referencia o serviço. |
+| 30 | A tela de criar/editar serviço abre por cima das abas (sem a barra de abas), enquanto no Figma a barra aparece. | Os botões fixos "Salvar rascunho" / "Atualizar serviço" ficam mais visíveis e não competem com a barra. |
+| 31 | O código da empresa aparece no perfil com o texto "Compartilhe com sua equipe". | Pensando no futuro perfil Funcionário (fora do escopo). |
+| 32 | Na web, os uploads convertem a imagem em `Blob` antes de enviar (no Android o `FormData` aceita `{ uri, name, type }`). | Permite demonstrar o app pelo navegador. |
+
 ## Pontos em aberto (aguardando o usuário)
 
 1. ~~Cadastro de cliente, etapa 2~~ → decidido (decisão 11).

@@ -31,3 +31,45 @@ export interface LoginResposta {
   token: string;
   usuario: Usuario;
 }
+
+export interface Foto {
+  id: number;
+  url: string;
+  ordem: number;
+}
+
+export interface EmpresaPerfil {
+  id: number;
+  codigo: string;
+  nomeFantasia: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+  cidade: string;
+  uf?: string;
+  endereco?: string;
+  descricao?: string;
+  logoUrl?: string;
+  capaUrl?: string;
+  categorias: Categoria[];
+  portfolio: Foto[];
+}
+
+export type ModeloPreco = 'FIXO' | 'A_PARTIR_DE' | 'FAIXA' | 'SOB_CONSULTA';
+
+export interface Servico {
+  id: number;
+  empresaId: number;
+  categoria: Categoria;
+  nome: string;
+  descricao?: string;
+  modeloPreco: ModeloPreco;
+  precoMin?: number;
+  precoMax?: number;
+  ativo: boolean;
+  rascunho: boolean;
+  fotos: Foto[];
+  itensInclusos: string[];
+  criadoEm: string;
+  atualizadoEm: string;
+}

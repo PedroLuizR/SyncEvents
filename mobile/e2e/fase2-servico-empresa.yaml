@@ -1,0 +1,57 @@
+# Fase 2: empresa cria, edita, desativa e remove um serviço.
+# Pré-requisitos: backend rodando, app instalado e uma empresa cadastrada.
+# Rodar:  maestro test -e EMAIL=contato@empresa.com e2e/fase2-servico-empresa.yaml
+appId: br.com.syncevents
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: 'opcao-empresa'
+- tapOn:
+    id: 'continuar'
+- tapOn:
+    id: 'campo-login'
+- inputText: ${EMAIL}
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- tapOn:
+    id: 'tab-servicos'
+- assertVisible: 'Meus serviços'
+
+# Criar
+- tapOn:
+    text: 'Cadastrar serviço|Novo'
+- tapOn:
+    id: 'campo-nome-servico'
+- inputText: 'Decoração completa para casamentos'
+- tapOn:
+    id: 'campo-categoria'
+- tapOn: 'Decoração'
+- tapOn:
+    id: 'campo-descricao'
+- inputText: 'Projeto personalizado com montagem completa.'
+- tapOn:
+    id: 'campo-preco-min'
+- inputText: '280000'
+- hideKeyboard
+- tapOn:
+    id: 'publicar-servico'
+- assertVisible: 'Decoração completa para casamentos'
+- assertVisible: 'a partir de R$ 2.800'
+
+# Editar e desativar
+- tapOn: 'Editar'
+- tapOn:
+    id: 'servico-ativo'
+- tapOn:
+    id: 'publicar-servico'
+- assertVisible: 'Inativo'
+
+# Remover (com confirmação)
+- tapOn: 'Excluir'
+- tapOn: 'Excluir'
+- assertVisible: 'Nenhum serviço ainda'

@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     // remove o contorno de foco do navegador (a borda do campo já indica o foco)
-    ...(Platform.OS === 'web' ? { outlineWidth: 0 } : null),
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null),
     fontFamily: fonts.sans,
     fontSize: fontSizes.md,
     color: colors.text,

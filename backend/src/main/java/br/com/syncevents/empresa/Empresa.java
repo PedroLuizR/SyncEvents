@@ -154,6 +154,22 @@ public class Empresa {
         return capaUrl;
     }
 
+    public void setCapaUrl(String capaUrl) {
+        this.capaUrl = capaUrl;
+    }
+
+    public void setNomeFantasia(String nomeFantasia) {
+        this.nomeFantasia = nomeFantasia;
+    }
+
+    public void setTelefoneWhatsapp(String telefoneWhatsapp) {
+        this.telefoneWhatsapp = telefoneWhatsapp;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
     public Set<Categoria> getCategorias() {
         return categorias;
     }

@@ -107,6 +107,68 @@ Devolve o `Usuario` logado.
 ```
 `fotoUrl` é a foto do cliente ou a logo da empresa, servida pelo backend em `/files/**`.
 
+## Fase 2: empresa: perfil e serviços
+
+Todas exigem token de **empresa** (cliente recebe `403`). A posse é checada no backend:
+outra empresa recebe `403 "Este serviço pertence a outra empresa"`.
+
+### Perfil (ID04)
+
+| Método | Rota | Corpo | Resposta |
+|---|---|---|---|
+| GET | `/empresas/me` | — | `EmpresaPerfil` |
+| PUT | `/empresas/me` | JSON `{ nomeFantasia, telefone, cidade, endereco?, descricao?, categoriaIds[] }` | `EmpresaPerfil` |
+| POST | `/empresas/me/logo` | multipart `arquivo` | `EmpresaPerfil` (a logo antiga é apagada) |
+| POST | `/empresas/me/capa` | multipart `arquivo` | `EmpresaPerfil` |
+| POST | `/empresas/me/portfolio` | multipart `arquivo` (máx. 12 fotos) | `EmpresaPerfil` |
+| DELETE | `/empresas/me/portfolio/{fotoId}` | — | `EmpresaPerfil` (`404` se a foto não é sua) |
+
+E-mail e CNPJ **não** são editáveis.
+
+```json
+{
+  "id": 1, "codigo": "504731", "nomeFantasia": "Ateliê Aurora", "cnpj": "42591003000118",
+  "email": "contato@aurora.com", "telefone": "1134567890", "cidade": "São Paulo, SP", "uf": "SP",
+  "endereco": "Rua das Flores, 100", "descricao": "...", "logoUrl": "/files/logos/x.png",
+  "capaUrl": "/files/capas/y.png", "categorias": [{ "id": 1, "nome": "Decoração", "icone": "star" }],
+  "portfolio": [{ "id": 9, "url": "/files/portfolio/z.png", "ordem": 0 }]
+}
+```
+
+### Serviços (ID05)
+
+| Método | Rota | Quem | Descrição |
+|---|---|---|---|
+| GET | `/servicos/me` | empresa | todos os seus (inclui inativos e rascunhos) |
+| POST | `/servicos/me` | empresa | cria → `201` |
+| GET | `/servicos/{id}` | autenticado | a dona vê qualquer um; os demais só ativos e publicados (senão `404`) |
+| PUT | `/servicos/{id}` | dona | edita |
+| DELETE | `/servicos/{id}` | dona | remove → `204` (apaga também as fotos) |
+| POST | `/servicos/{id}/fotos` | dona | multipart `arquivo` (máx. 6) |
+| DELETE | `/servicos/{id}/fotos/{fotoId}` | dona | remove a foto |
+| GET | `/empresas/{id}/servicos` | autenticado | serviços **ativos e publicados** da empresa |
+
+Corpo de criação/edição:
+
+```json
+{
+  "nome": "Decoração completa", "categoriaId": 1, "descricao": "Projeto personalizado...",
+  "modeloPreco": "A_PARTIR_DE", "precoMin": 2800, "precoMax": null,
+  "ativo": true, "rascunho": false, "itensInclusos": ["Projeto e moodboard", "Montagem"]
+}
+```
+
+| Regra | Mensagem |
+|---|---|
+| Sempre: nome e categoria | "Informe o nome do serviço", "Escolha a categoria" |
+| Para publicar (`rascunho: false`): descrição | "Descreva o serviço" |
+| Para publicar: modelo de preço | "Escolha o modelo de preço" |
+| `FIXO` / `A_PARTIR_DE` / `FAIXA`: valor mínimo > 0 | "Informe o valor" |
+| `FAIXA`: valor máximo > 0 e ≥ mínimo | "Informe o valor máximo" / "O valor máximo deve ser maior ou igual ao mínimo" |
+
+Normalização: `SOB_CONSULTA` descarta os preços; `precoMax` só é guardado em `FAIXA`; itens vazios são ignorados.
+Um serviço aparece para clientes apenas se `ativo = true` e `rascunho = false`.
+
 ## Erros de validação (exemplos)
 
 ```json

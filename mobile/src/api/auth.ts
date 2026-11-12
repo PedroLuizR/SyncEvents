@@ -44,13 +44,13 @@ export async function login(dados: LoginDados): Promise<LoginResposta> {
 }
 
 export async function cadastrarCliente(dados: CadastroClienteDados): Promise<Usuario> {
-  const form = montarFormData({ ...dados });
+  const form = await montarFormData({ ...dados });
   const { data } = await api.post<Usuario>('/auth/cadastro/cliente', form, multipart);
   return data;
 }
 
 export async function cadastrarEmpresa(dados: CadastroEmpresaDados): Promise<Usuario> {
-  const form = montarFormData({ ...dados });
+  const form = await montarFormData({ ...dados });
   const { data } = await api.post<Usuario>('/auth/cadastro/empresa', form, multipart);
   return data;
 }

@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +24,7 @@ import br.com.syncevents.cliente.Cliente;
 import br.com.syncevents.cliente.ClienteRepository;
 import br.com.syncevents.common.ApiException;
 import br.com.syncevents.common.TipoEvento;
+import br.com.syncevents.common.Textos;
 import br.com.syncevents.common.validacao.Documentos;
 import br.com.syncevents.empresa.CodigoEmpresaGenerator;
 import br.com.syncevents.empresa.Empresa;
@@ -39,7 +38,6 @@ import br.com.syncevents.usuario.UsuarioRepository;
 public class AuthService {
 
     static final String CREDENCIAIS_INVALIDAS = "CREDENCIAIS_INVALIDAS";
-    private static final Pattern CIDADE_UF = Pattern.compile(".*,\\s*([A-Za-z]{2})\\s*$");
 
     private final UsuarioRepository usuarioRepository;
     private final ClienteRepository clienteRepository;
@@ -188,16 +186,14 @@ public class AuthService {
     }
 
     static String normalizarEspacos(String valor) {
-        return valor.trim().replaceAll("\\s+", " ");
+        return Textos.normalizarEspacos(valor);
     }
 
     static String vazioParaNulo(String valor) {
-        return valor == null || valor.isBlank() ? null : valor.trim();
+        return Textos.vazioParaNulo(valor);
     }
 
-    /** "São Paulo, SP" → "SP"; sem UF → null. */
     static String extrairUf(String cidade) {
-        Matcher m = CIDADE_UF.matcher(cidade);
-        return m.matches() ? m.group(1).toUpperCase(Locale.ROOT) : null;
+        return Textos.extrairUf(cidade);
     }
 }

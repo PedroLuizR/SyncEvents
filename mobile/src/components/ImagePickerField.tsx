@@ -1,9 +1,9 @@
 import { Feather } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { colors, radii, spacing } from '@/theme';
+import { escolherImagem } from '@/utils/escolherImagem';
 
 import { Button } from './Button';
 import { Text } from './Text';
@@ -33,16 +33,8 @@ export function ImagePickerField({
   erro,
 }: ImagePickerFieldProps) {
   async function escolher() {
-    const resultado = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (resultado.canceled || !resultado.assets[0]) return;
-    const a = resultado.assets[0];
-    const tipo = a.mimeType ?? 'image/jpeg';
-    onChange({ uri: a.uri, nome: a.fileName ?? `imagem.${tipo.split('/')[1] ?? 'jpg'}`, tipo });
+    const arquivo = await escolherImagem();
+    if (arquivo) onChange(arquivo);
   }
 
   const raio = formato === 'circulo' ? radii.pill : radii.md;

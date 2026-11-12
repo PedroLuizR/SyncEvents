@@ -12,8 +12,9 @@ App Android que conecta **clientes** a **empresas organizadoras de eventos**: bu
 |---|---|---|
 | 0 | Fundação (infra, backend base, app base, design system) | ✅ |
 | 1 | Autenticação e cadastros (boas-vindas, login, cadastro de cliente e de empresa) | ✅ |
-| 2 | Empresa: perfil e serviços | ⏳ |
-| 3 a 7 | Ver o plano | — |
+| 2 | Empresa: perfil (logo, capa, portfólio) e serviços (criar, editar, rascunho, ativar/desativar, excluir) | ✅ |
+| 3 | Cliente: busca e perfil da empresa | ⏳ |
+| 4 a 7 | Ver o plano | — |
 
 ## Pré-requisitos
 

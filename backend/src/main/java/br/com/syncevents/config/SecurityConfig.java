@@ -50,6 +50,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(ROTAS_PUBLICAS).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categorias/**").permitAll()
+                        // Rotas exclusivas de empresa (a posse do recurso é checada no service)
+                        .requestMatchers("/api/v1/empresas/me", "/api/v1/empresas/me/**").hasRole("EMPRESA")
+                        .requestMatchers("/api/v1/servicos/me").hasRole("EMPRESA")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/servicos/**").hasRole("EMPRESA")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/servicos/**").hasRole("EMPRESA")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/servicos/**").hasRole("EMPRESA")
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
                 .build();
