@@ -2,13 +2,13 @@ import { mascaraCpf } from '../masks';
 import { cnpjValido, nomePessoaValido, senhaForte, telefoneValido } from '../validacao';
 
 describe('validações (mesmas regras do backend)', () => {
-  it.each(['11.222.333/0001-81', '11222333000181', '45.723.174/0001-10'])('CNPJ válido %s', (c) =>
-    expect(cnpjValido(c)).toBe(true),
+  it.each(['11.222.333/0001-81', '11222333000181', '11.222.333/0001-82', '00000000000000'])(
+    'CNPJ com 14 dígitos %s',
+    (c) => expect(cnpjValido(c)).toBe(true),
   );
 
-  it.each(['11.222.333/0001-82', '00000000000000', '11111111111111', '1122233300018', ''])(
-    'CNPJ inválido %s',
-    (c) => expect(cnpjValido(c)).toBe(false),
+  it.each(['1122233300018', '11.222.333/0001', ''])('CNPJ incompleto %s', (c) =>
+    expect(cnpjValido(c)).toBe(false),
   );
 
   it.each(['Senha@123', 'Abcdef1!', 'Çãoção9#X'])('senha forte %s', (s) =>

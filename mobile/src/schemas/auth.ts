@@ -81,7 +81,7 @@ export const cadastroEmpresaSchema = z
     // Etapa 1
     logo: imagem,
     nomeFantasia: z.string().trim().min(1, 'Informe o nome fantasia').max(120, 'Nome muito longo'),
-    cnpj: z.string().min(1, 'Informe o CNPJ').refine(cnpjValido, 'CNPJ inválido'),
+    cnpj: z.string().min(1, 'Informe o CNPJ').refine(cnpjValido, 'O CNPJ deve ter 14 dígitos'),
     email: email('Informe o e-mail comercial'),
     telefone: telefone('Informe o telefone'),
     cidade: cidade('Informe a cidade'),

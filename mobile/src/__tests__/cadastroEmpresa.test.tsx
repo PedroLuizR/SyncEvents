@@ -22,13 +22,13 @@ beforeEach(() => {
   ]);
 });
 
-it('mostra CNPJ inválido e exige categoria', async () => {
+it('mostra CNPJ incompleto e exige categoria', async () => {
   await renderTela(<CadastroEmpresaScreen />);
   await screen.findByText('Decoração');
-  await fireEvent.changeText(screen.getByTestId('campo-cnpj'), '11222333000182');
-  expect(screen.getByTestId('campo-cnpj').props.value).toBe('11.222.333/0001-82');
+  await fireEvent.changeText(screen.getByTestId('campo-cnpj'), '112223330001');
+  expect(screen.getByTestId('campo-cnpj').props.value).toBe('11.222.333/0001');
   await fireEvent.press(screen.getByTestId('salvar-continuar'));
-  expect(await screen.findByText('CNPJ inválido')).toBeTruthy();
+  expect(await screen.findByText('O CNPJ deve ter 14 dígitos')).toBeTruthy();
   expect(screen.getByText('Escolha ao menos uma categoria')).toBeTruthy();
 });
 

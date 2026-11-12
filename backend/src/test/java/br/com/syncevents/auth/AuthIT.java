@@ -179,10 +179,17 @@ class AuthIT extends IntegrationTest {
     }
 
     @Test
-    void cnpjInvalidoMostraMensagemClara() throws Exception {
-        mvc.perform(cadastroEmpresa(TestData.email("inv"), "11.222.333/0001-82"))
+    void cnpjIncompletoMostraMensagemClara() throws Exception {
+        mvc.perform(cadastroEmpresa(TestData.email("inv"), "11.222.333/0001"))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.campos.cnpj").value("CNPJ inválido"));
+                .andExpect(jsonPath("$.campos.cnpj").value("O CNPJ deve ter 14 dígitos"));
+    }
+
+    @Test
+    void cnpjComDigitoVerificadorErradoEAceito() throws Exception {
+        String base = TestData.cnpjValido();
+        String dvErrado = base.substring(0, 13) + ((base.charAt(13) - '0' + 1) % 10);
+        mvc.perform(cadastroEmpresa(TestData.email("dv"), dvErrado)).andExpect(status().isCreated());
     }
 
     @Test

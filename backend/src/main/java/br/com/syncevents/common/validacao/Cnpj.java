@@ -11,14 +11,14 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Payload;
 
-/** CNPJ válido (com ou sem máscara). Nulo é considerado válido: combine com @NotBlank. */
+/** CNPJ com 14 dígitos (com ou sem máscara), sem conferir os dígitos verificadores. Nulo é válido: combine com @NotBlank. */
 @Documented
 @Constraint(validatedBy = Cnpj.Validador.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.RECORD_COMPONENT})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Cnpj {
 
-    String message() default "CNPJ inválido";
+    String message() default "O CNPJ deve ter 14 dígitos";
 
     Class<?>[] groups() default {};
 

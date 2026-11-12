@@ -58,7 +58,7 @@ Resposta `201` com o `Usuario` (abaixo). Não devolve token: o app volta para o 
 | Campo | Obrigatório | Regra |
 |---|---|---|
 | `nomeFantasia` | sim | até 120 |
-| `cnpj` | sim | com ou sem máscara; dígitos verificadores válidos; único |
+| `cnpj` | sim | 14 dígitos, com ou sem máscara (dígitos verificadores **não** são conferidos); único |
 | `email` | sim | formato válido e único |
 | `telefone` | sim | WhatsApp da empresa |
 | `cidade` | sim | se terminar em `, UF`, a UF é guardada separadamente |
@@ -111,7 +111,7 @@ Devolve o `Usuario` logado.
 
 ```json
 { "status": 400, "erro": "VALIDACAO", "mensagem": "Dados inválidos",
-  "campos": { "email": "E-mail já cadastrado", "cnpj": "CNPJ inválido" } }
+  "campos": { "email": "E-mail já cadastrado", "cnpj": "O CNPJ deve ter 14 dígitos" } }
 ```
 
 O contrato completo planejado está na seção 7 de [`SYNCEVENTS_PLANO.md`](../SYNCEVENTS_PLANO.md).

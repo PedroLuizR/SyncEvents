@@ -59,18 +59,17 @@ class ValidadoresTest {
     // ---- CNPJ ----
 
     @ParameterizedTest
-    @ValueSource(strings = {"11.222.333/0001-81", "11222333000181", "45.723.174/0001-10"})
-    void cnpjValido(String cnpj) {
+    @ValueSource(strings = {"11.222.333/0001-81", "11222333000181", "11.222.333/0001-82", "00000000000000"})
+    void cnpjComQuatorzeDigitosEAceitoSemConferirDigitoVerificador(String cnpj) {
         assertThat(Documentos.cnpjValido(cnpj)).isTrue();
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"11.222.333/0001-82", "11222333000180", "00000000000000", "11111111111111",
-            "1122233300018", "112223330001811", "abc"})
+    @ValueSource(strings = {"1122233300018", "112223330001811", "abc", "11.222.333/0001-8X"})
     void cnpjInvalido(String cnpj) {
         assertThat(Documentos.cnpjValido(cnpj)).isFalse();
         assertThat(validar(new Dados(null, cnpj, null, null)))
-                .extracting(ConstraintViolation::getMessage).containsExactly("CNPJ inválido");
+                .extracting(ConstraintViolation::getMessage).containsExactly("O CNPJ deve ter 14 dígitos");
     }
 
     @Test

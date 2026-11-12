@@ -10,25 +10,15 @@ public final class Documentos {
         return valor == null ? null : valor.replaceAll("\\D", "");
     }
 
-    /** CNPJ com 14 dígitos e dígitos verificadores corretos. */
+    /**
+     * CNPJ com 14 dígitos (com ou sem máscara). Os dígitos verificadores
+     * <b>não</b> são conferidos, por decisão do projeto (ver docs/decisoes.md).
+     */
     public static boolean cnpjValido(String valor) {
-        String cnpj = apenasDigitos(valor);
-        if (cnpj == null || cnpj.length() != 14 || cnpj.chars().distinct().count() == 1) {
+        if (valor == null || !valor.matches("[\\d./\\-\\s]+")) {
             return false;
         }
-        int[] pesos1 = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
-        int[] pesos2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
-        return digito(cnpj, pesos1) == cnpj.charAt(12) - '0'
-                && digito(cnpj, pesos2) == cnpj.charAt(13) - '0';
-    }
-
-    private static int digito(String cnpj, int[] pesos) {
-        int soma = 0;
-        for (int i = 0; i < pesos.length; i++) {
-            soma += (cnpj.charAt(i) - '0') * pesos[i];
-        }
-        int resto = soma % 11;
-        return resto < 2 ? 0 : 11 - resto;
+        return apenasDigitos(valor).length() == 14;
     }
 
     /** Telefone com DDD: 10 (fixo) ou 11 (celular) dígitos. */

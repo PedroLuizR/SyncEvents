@@ -21,7 +21,7 @@
 |---|---|---|
 | 11 | **Cadastro de cliente em 2 etapas:** etapa 1 igual ao Figma; etapa 2 com **CPF (opcional, sem validação)** e **foto (opcional)**. | Resposta do usuário: projeto simples, para apresentação. |
 | 12 | **Cadastro de empresa em 2 etapas:** etapa 1 igual ao Figma; etapa 2 com senha, confirmação de senha, **endereço (opcional, sem verificação)** e aceite dos termos. | O Figma não tem campo de senha para a empresa; o endereço segue a resposta do usuário e pode ser editado depois no perfil (Fase 2). |
-| 13 | O CNPJ **continua com validação** dos dígitos verificadores. | Está no plano e no critério de aceite ("CNPJ inválido mostra mensagem clara"). A dispensa de validação foi só para o CPF. Se quiser tirar, basta remover `@Cnpj` no backend e o `refine` no schema. |
+| 13 | O CNPJ **não confere os dígitos verificadores**; só exige 14 dígitos (com ou sem máscara) e continua único. | Pedido do usuário (projeto para apresentação). Os 14 dígitos são mantidos porque a máscara, o banco e o login por CNPJ dependem desse formato. |
 | 14 | Os cadastros usam `multipart/form-data` com campos simples (não JSON). | Envia a foto/logo na mesma requisição e funciona bem com o `FormData` do React Native. |
 | 15 | O cadastro não devolve token: o app volta ao login com "Cadastro realizado!" e o e-mail preenchido. | Pedido do plano. |
 | 16 | Login na aba errada (senha certa) responde "Esta conta é de cliente. Entre pela aba Cliente.". Senha errada e usuário inexistente têm a **mesma** mensagem. | Mensagem clara sem revelar quais e-mails existem. |

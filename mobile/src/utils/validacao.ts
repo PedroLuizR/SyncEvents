@@ -1,17 +1,11 @@
 import { apenasDigitos } from './masks';
 
-/** CNPJ com 14 dígitos e dígitos verificadores corretos (mesma regra do backend). */
+/**
+ * CNPJ com 14 dígitos (mesma regra do backend). Os dígitos verificadores
+ * não são conferidos, por decisão do projeto.
+ */
 export function cnpjValido(valor: string): boolean {
-  const cnpj = apenasDigitos(valor);
-  if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
-  const digito = (base: string, pesos: number[]) => {
-    const soma = pesos.reduce((acc, peso, i) => acc + Number(base[i]) * peso, 0);
-    const resto = soma % 11;
-    return resto < 2 ? 0 : 11 - resto;
-  };
-  const d1 = digito(cnpj, [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-  const d2 = digito(cnpj, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-  return d1 === Number(cnpj[12]) && d2 === Number(cnpj[13]);
+  return apenasDigitos(valor).length === 14;
 }
 
 /** Telefone com DDD: 10 ou 11 dígitos, DDD não começa com 0. */

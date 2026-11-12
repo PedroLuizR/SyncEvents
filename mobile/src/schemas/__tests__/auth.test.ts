@@ -76,15 +76,21 @@ describe('cadastroEmpresaSchema', () => {
     expect(cadastroEmpresaSchema.safeParse({ ...empresaValida, endereco: '' }).success).toBe(true);
   });
 
-  it('recusa CNPJ inválido, sem categoria e senhas diferentes', () => {
+  it('não confere os dígitos verificadores do CNPJ', () => {
+    expect(
+      cadastroEmpresaSchema.safeParse({ ...empresaValida, cnpj: '11.222.333/0001-82' }).success,
+    ).toBe(true);
+  });
+
+  it('recusa CNPJ incompleto, sem categoria e senhas diferentes', () => {
     const r = cadastroEmpresaSchema.safeParse({
       ...empresaValida,
-      cnpj: '11.222.333/0001-82',
+      cnpj: '11.222.333/0001',
       categoriaIds: [],
       confirmarSenha: 'Outra@123',
     });
     expect(erros(r)).toEqual({
-      cnpj: 'CNPJ inválido',
+      cnpj: 'O CNPJ deve ter 14 dígitos',
       categoriaIds: 'Escolha ao menos uma categoria',
       confirmarSenha: 'As senhas não conferem',
     });
