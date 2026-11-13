@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { mensagemDeErro } from '@/api/client';
-import { Card, Chip, EmptyState, SolicitacaoCard, Text } from '@/components';
+import { Card, Chip, EmptyState, FormAvaliacao, SolicitacaoCard, Text } from '@/components';
+import type { Solicitacao } from '@/api/types';
 import { useMinhasSolicitacoes } from '@/hooks/useSolicitacoes';
 import { useSessionStore } from '@/store/session';
 import { colors, fonts, radii, spacing } from '@/theme';
@@ -22,6 +23,7 @@ export default function MinhasSolicitacoesScreen() {
   const usuario = useSessionStore((s) => s.usuario);
   const solicitacoes = useMinhasSolicitacoes();
   const [aba, setAba] = useState('todas');
+  const [avaliando, setAvaliando] = useState<Solicitacao | null>(null);
 
   const todas = solicitacoes.data ?? [];
   const abaAtual = ABAS_CLIENTE.find((a) => a.chave === aba) ?? ABAS_CLIENTE[0];
@@ -86,6 +88,9 @@ export default function MinhasSolicitacoesScreen() {
             solicitacao={item}
             quem="CLIENTE"
             onPress={() => router.push(`/cliente/solicitacao/${item.id}`)}
+            onAvaliar={
+              item.status === 'CONCLUIDA' && !item.avaliada ? () => setAvaliando(item) : undefined
+            }
           />
         )}
         ListEmptyComponent={
@@ -118,6 +123,7 @@ export default function MinhasSolicitacoesScreen() {
           )
         }
       />
+      <FormAvaliacao solicitacao={avaliando} onFechar={() => setAvaliando(null)} />
     </SafeAreaView>
   );
 }

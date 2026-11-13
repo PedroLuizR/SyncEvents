@@ -28,10 +28,10 @@ responde pedidos e acompanha seus indicadores.
 | 3 | Início do cliente, busca com filtros, perfil público da empresa, dados de demonstração | ID06, ID07 | ✅ |
 | 4 | Pedido de orçamento, propostas, gestão pela empresa, painel com indicadores | ID08, ID10 | ✅ |
 | 5 | Chat em tempo real (WebSocket/STOMP) com propostas na conversa | ID09 | ✅ |
-| 6 | Avaliações (nota, destaques, média no perfil) | ID11 | ⏳ |
+| 6 | Avaliações (nota, destaques, média e % que recomendam no perfil e na busca) | ID11 | ✅ |
 | 7 | Acabamento: revisão visual, acessibilidade, fluxos Maestro completos, APK de release | — | ⏳ |
 
-Números atuais: **149 testes no backend** (93 unitários + 56 de integração com Postgres real) e **146 no mobile**,
+Números atuais: **157 testes no backend** (94 unitários + 63 de integração com Postgres real) e **150 no mobile**,
 todos passando, com typecheck, lint e Prettier sem erros.
 
 ## Funcionalidades
@@ -44,6 +44,7 @@ todos passando, com typecheck, lint e Prettier sem erros.
 - Pedido de orçamento em 3 etapas (dados → revisão → enviado), com fotos de inspiração.
 - "Minhas solicitações" por status; aceitar ou recusar propostas; cancelar o pedido.
 - Chat em tempo real com cada empresa, com a proposta aparecendo como card na conversa.
+- Avaliação do evento concluído (nota, destaques e comentário), exibida no perfil da empresa.
 
 **Empresa**
 - Cadastro em 2 etapas com código público de 6 dígitos; login por e-mail ou CNPJ.

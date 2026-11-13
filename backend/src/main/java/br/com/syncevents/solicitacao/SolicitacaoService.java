@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.syncevents.auth.UsuarioAutenticado;
+import br.com.syncevents.avaliacao.AvaliacaoRepository;
 import br.com.syncevents.chat.ChatService;
 import br.com.syncevents.chat.Conversa;
 import br.com.syncevents.chat.ConversaRepository;
@@ -52,11 +53,13 @@ public class SolicitacaoService {
     private final VisualizacaoPerfilRepository visualizacaoRepository;
     private final StorageService storage;
     private final ChatService chatService;
+    private final AvaliacaoRepository avaliacaoRepository;
 
     public SolicitacaoService(SolicitacaoRepository repository, PropostaRepository propostaRepository,
             ConversaRepository conversaRepository, ClienteRepository clienteRepository,
             EmpresaRepository empresaRepository, EmpresaService empresaService, ServicoRepository servicoRepository,
-            VisualizacaoPerfilRepository visualizacaoRepository, StorageService storage, ChatService chatService) {
+            VisualizacaoPerfilRepository visualizacaoRepository, StorageService storage, ChatService chatService,
+            AvaliacaoRepository avaliacaoRepository) {
         this.repository = repository;
         this.propostaRepository = propostaRepository;
         this.conversaRepository = conversaRepository;
@@ -67,6 +70,7 @@ public class SolicitacaoService {
         this.visualizacaoRepository = visualizacaoRepository;
         this.storage = storage;
         this.chatService = chatService;
+        this.avaliacaoRepository = avaliacaoRepository;
     }
 
     // ------------------------------------------------------------------ cliente
@@ -218,10 +222,14 @@ public class SolicitacaoService {
         List<Solicitacao> lista = usuario.tipo() == TipoUsuario.CLIENTE
                 ? repository.listarDoCliente(clienteDe(usuario).getId(), filtro)
                 : repository.listarDaEmpresa(empresaService.daUsuario(usuario).getId(), filtro);
+        Set<Long> avaliadas = lista.isEmpty() ? Set.of()
+                : new java.util.HashSet<>(avaliacaoRepository.solicitacoesAvaliadas(
+                        lista.stream().map(Solicitacao::getId).toList()));
         return lista.stream()
                 .map(s -> SolicitacaoResponse.resumo(s,
                         s.getPropostas().isEmpty() ? null
-                                : PropostaResponse.de(s.getPropostas().get(s.getPropostas().size() - 1))))
+                                : PropostaResponse.de(s.getPropostas().get(s.getPropostas().size() - 1)),
+                        avaliadas.contains(s.getId())))
                 .toList();
     }
 
@@ -239,7 +247,7 @@ public class SolicitacaoService {
 
     private SolicitacaoResponse detalhe(Solicitacao s) {
         Long conversaId = conversaRepository.findBySolicitacaoId(s.getId()).map(Conversa::getId).orElse(null);
-        return SolicitacaoResponse.detalhe(s, conversaId);
+        return SolicitacaoResponse.detalhe(s, conversaId, avaliacaoRepository.existsBySolicitacaoId(s.getId()));
     }
 
     private Cliente clienteDe(UsuarioAutenticado usuario) {

@@ -313,6 +313,39 @@ Cada solicitação tem **uma conversa** (criada junto com o pedido). Só o clien
   propostas enviadas e propostas aceitas/recusadas (a mesma mensagem chega de novo com o status novo; o app substitui pelo `id`).
 - Heartbeat de 10 s. O app reconecta sozinho a cada 5 s e, enquanto estiver desconectado, recarrega o histórico a cada 5 s (polling).
 
+## Fase 6: avaliações
+
+### `POST /avaliacoes` (cliente) — ID11
+
+```json
+{ "solicitacaoId": 42, "nota": 5, "comentario": "Equipe impecável!", "destaques": ["ATENDIMENTO", "QUALIDADE"] }
+```
+
+| Regra | Resposta |
+|---|---|
+| Só o cliente da solicitação | outros: **403** |
+| Só solicitações `CONCLUIDA` | **409** "Só é possível avaliar depois que o evento for concluído" |
+| Uma avaliação por solicitação | **409** "Você já avaliou este evento" |
+| Nota de 1 a 5 | **400** "Escolha uma nota de 1 a 5" |
+
+Destaques: `PONTUALIDADE`, `QUALIDADE`, `ATENDIMENTO`, `CUSTO_BENEFICIO` (opcionais). Comentário opcional (até 1000).
+
+### `GET /empresas/{id}/avaliacoes?page=&size=`
+
+```json
+{
+  "resumo": { "media": 4.7, "total": 12, "recomendam": 92 },
+  "avaliacoes": { "conteudo": [{ "id": 1, "nota": 5, "comentario": "...", "destaques": ["ATENDIMENTO"],
+    "tipoEvento": "CASAMENTO", "autor": { "nome": "Ana S." }, "criadoEm": "..." }], "pagina": 0, "total": 12, ... }
+}
+```
+
+- `media` com 1 casa decimal (o app mostra "4,7"); `recomendam` = % de notas 4 e 5. Sem avaliações: `media` e `recomendam` nulos.
+- O autor aparece como primeiro nome + inicial do sobrenome.
+- A média e o total também vêm em `GET /empresas` (cards), `GET /empresas/recomendadas` (agora ordenadas por nota depois da cidade)
+  e `GET /empresas/{id}` (`nota`, `totalAvaliacoes`, `indicadores.recomendam`). `ordenar=nota` passa a ordenar pela média.
+- Solicitações passam a trazer `avaliada: true|false`.
+
 ## Erros de validação (exemplos)
 
 ```json

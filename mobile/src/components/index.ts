@@ -36,3 +36,5 @@ export * from './DetalheSolicitacao';
 export * from './FormProposta';
 export * from './BolhaMensagem';
 export * from './BotaoConversas';
+export * from './AvaliacaoCard';
+export * from './FormAvaliacao';

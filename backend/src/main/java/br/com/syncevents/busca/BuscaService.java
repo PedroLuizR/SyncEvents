@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.syncevents.auth.UsuarioAutenticado;
+import br.com.syncevents.avaliacao.AvaliacaoService;
+import br.com.syncevents.avaliacao.dto.ResumoAvaliacoes;
 import br.com.syncevents.categoria.CategoriaResponse;
 import br.com.syncevents.cliente.Cliente;
 import br.com.syncevents.cliente.ClienteRepository;
@@ -37,11 +39,12 @@ public class BuscaService {
     private final PortfolioFotoRepository portfolioRepository;
     private final VisualizacaoPerfilRepository visualizacaoRepository;
     private final SolicitacaoRepository solicitacaoRepository;
+    private final AvaliacaoService avaliacaoService;
 
     public BuscaService(BuscaRepository buscaRepository, EmpresaRepository empresaRepository,
             ClienteRepository clienteRepository, ServicoRepository servicoRepository,
             PortfolioFotoRepository portfolioRepository, VisualizacaoPerfilRepository visualizacaoRepository,
-            SolicitacaoRepository solicitacaoRepository) {
+            SolicitacaoRepository solicitacaoRepository, AvaliacaoService avaliacaoService) {
         this.buscaRepository = buscaRepository;
         this.empresaRepository = empresaRepository;
         this.clienteRepository = clienteRepository;
@@ -49,6 +52,7 @@ public class BuscaService {
         this.portfolioRepository = portfolioRepository;
         this.visualizacaoRepository = visualizacaoRepository;
         this.solicitacaoRepository = solicitacaoRepository;
+        this.avaliacaoService = avaliacaoService;
     }
 
     @Transactional(readOnly = true)
@@ -80,13 +84,14 @@ public class BuscaService {
         List<FotoResponse> portfolio = portfolioRepository.findByEmpresaIdOrderByOrdemAscIdAsc(e.getId()).stream()
                 .map(p -> new FotoResponse(p.getId(), p.getUrl(), p.getOrdem())).toList();
         long eventos = solicitacaoRepository.countByEmpresaIdAndStatus(e.getId(), StatusSolicitacao.CONCLUIDA);
+        ResumoAvaliacoes avaliacoes = avaliacaoService.resumo(e.getId());
         var indicadores = new EmpresaPublicaResponse.Indicadores(eventos, servicos.size(), portfolio.size(),
-                e.getCriadoEm().atZone(FUSO).getYear());
+                e.getCriadoEm().atZone(FUSO).getYear(), avaliacoes.recomendam());
 
         return new EmpresaPublicaResponse(e.getId(), e.getCodigo(), e.getNomeFantasia(), e.getDescricao(),
                 e.getCidade(), e.getUf(), e.getEndereco(), e.getTelefoneWhatsapp(), e.getLogoUrl(), e.getCapaUrl(),
                 e.getCategorias().stream().map(CategoriaResponse::de)
                         .sorted(Comparator.comparing(CategoriaResponse::id)).toList(),
-                portfolio, servicos, null, 0, indicadores);
+                portfolio, servicos, avaliacoes.media(), avaliacoes.total(), indicadores);
     }
 }

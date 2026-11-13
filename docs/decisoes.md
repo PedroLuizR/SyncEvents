@@ -53,7 +53,7 @@ Todas as escolhas feitas durante o desenvolvimento, principalmente onde o plano 
 
 | # | Decisão | Motivo |
 |---|---|---|
-| 33 | **Notas e avaliações ficam para a Fase 6.** Até lá os cards e o perfil mostram o selo "Novo", e "Melhor avaliadas" ordena por relevância. O seed também não traz avaliações. | A tabela `avaliacao` depende de `solicitacao` (Fase 4): só quem concluiu um evento pode avaliar. Criar avaliações falsas agora quebraria essa regra. |
+| 33 | **Notas e avaliações ficam para a Fase 6** (feito: ver decisões 61 a 65). Até lá os cards e o perfil mostram o selo "Novo", e "Melhor avaliadas" ordena por relevância. O seed também não traz avaliações. | A tabela `avaliacao` depende de `solicitacao` (Fase 4): só quem concluiu um evento pode avaliar. Criar avaliações falsas agora quebraria essa regra. |
 | 34 | Indicadores do perfil: **serviços publicados**, **fotos no portfólio** e **ano de entrada**, no lugar de "eventos realizados", "tempo de resposta" e "% recomendam" do Figma. | Esses três dependem de solicitações, chat e avaliações (Fases 4 a 6). O campo `eventosRealizados` já existe na API e passa a ser preenchido na Fase 4. |
 | 35 | Busca com várias palavras: **todas** precisam aparecer (no nome, na categoria, num serviço ou nas descrições); palavras como "de", "para" e "e" são ignoradas. | "Decoração para casamento" deve trazer quem faz decoração **de** casamento, não qualquer decoração. |
 | 36 | A busca usa SQL com `unaccent` em vez de JPA/Criteria. | Relevância ponderada, filtros opcionais e agregações (menor preço) ficam mais simples e rápidas em SQL. |
@@ -91,6 +91,16 @@ Todas as escolhas feitas durante o desenvolvimento, principalmente onde o plano 
 | 58 | A conversa é marcada como lida ao abrir e a cada mensagem recebida. A confirmação de leitura (✓ verde) do remetente atualiza quando ele reabre a conversa (não é empurrada em tempo real). | Mantém o protocolo simples; o estado no servidor está sempre correto. |
 | 59 | A lista de conversas não tem aba própria: abre pelo **ícone de conversas** (com contador de não lidas) no Início do cliente e no Painel da empresa, e pelo botão "Conversar"/"Abrir conversa" nos detalhes da solicitação. | O Figma tem 4 abas por perfil e nenhuma é de conversas. |
 | 60 | Não implementados: anexos no chat (botão "+"), mensagem de voz (microfone), indicador "digitando…" e status "online". | Fora do escopo do plano. |
+
+## Fase 6
+
+| # | Decisão | Motivo |
+|---|---|---|
+| 61 | O autor da avaliação aparece como "Ana S." (primeiro nome + inicial do sobrenome). | Privacidade do cliente; o Figma mostra um nome curto. |
+| 62 | "% recomendam" = porcentagem de notas 4 e 5. O perfil passa a mostrar **eventos realizados**, **% recomendam** e **serviços**, como no Figma (sem avaliações, mostra fotos no portfólio no lugar do %). | Indicadores reais disponíveis a partir desta fase. |
+| 63 | "Tempo de resposta" do Figma não foi implementado. | Exigiria medir a primeira resposta no chat; fora das regras do plano. |
+| 64 | O seed cria clientes extras (Ana, Bruno, Carla, Diego) com **pedidos concluídos e proposta aceita** antes de criar as avaliações de demonstração. | Mantém a regra "só quem concluiu pode avaliar" também nos dados de exemplo. |
+| 65 | A avaliação não pode ser editada nem apagada pelo cliente. | O plano define uma avaliação por solicitação; edição não está no escopo. |
 
 ## Pontos em aberto (aguardando o usuário)
 

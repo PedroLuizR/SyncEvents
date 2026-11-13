@@ -40,13 +40,18 @@ class DemoSeederIT extends IntegrationTest {
     @Autowired CodigoEmpresaGenerator codigos;
     @Autowired PasswordEncoder encoder;
     @Autowired StorageService storage;
+    @Autowired br.com.syncevents.solicitacao.SolicitacaoRepository solicitacoes;
+    @Autowired br.com.syncevents.chat.ConversaRepository conversas;
+    @Autowired br.com.syncevents.avaliacao.AvaliacaoRepository avaliacoes;
 
     @Test
     void criaOsDadosUmaVezEOClienteDemoConsegueBuscar() throws Exception {
         var seeder = new DemoSeeder(usuarios, clientes, empresas, categorias, servicos, portfolio, codigos, encoder,
-                storage);
+                storage, solicitacoes, conversas, avaliacoes);
         seeder.semear();
+        seeder.semearAvaliacoes();
         assertThat(seeder.semear()).as("segunda execução não duplica").isFalse();
+        assertThat(seeder.semearAvaliacoes()).isFalse();
 
         String body = mvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsString(Map.of("login", DemoSeeder.EMAIL_CLIENTE,
@@ -64,7 +69,10 @@ class DemoSeederIT extends IntegrationTest {
         mvc.perform(get("/api/v1/empresas/" + aurora.get("id").asLong()).header("Authorization", token))
                 .andExpect(jsonPath("$.servicos.length()").value(2))
                 .andExpect(jsonPath("$.portfolio.length()").value(4))
-                .andExpect(jsonPath("$.servicos[0].fotos.length()").value(2));
+                .andExpect(jsonPath("$.servicos[0].fotos.length()").value(2))
+                .andExpect(jsonPath("$.totalAvaliacoes").value(2))
+                .andExpect(jsonPath("$.nota").exists())
+                .andExpect(jsonPath("$.indicadores.eventosRealizados").value(2));
 
         mvc.perform(get("/api/v1/empresas/recomendadas").header("Authorization", token))
                 .andExpect(jsonPath("$.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(5)));

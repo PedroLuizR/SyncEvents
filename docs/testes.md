@@ -6,9 +6,9 @@ Cada fase entrega testes de **service** (unitários), **controller/API** (integr
 
 | Onde | Testes | Ferramentas |
 |---|---|---|
-| Backend: unitários | 93 | JUnit 5, Mockito, AssertJ |
-| Backend: integração | 56 | Spring Boot Test, MockMvc, Testcontainers (PostgreSQL 16), cliente STOMP real |
-| Mobile | 146 | Jest (jest-expo), React Native Testing Library |
+| Backend: unitários | 94 | JUnit 5, Mockito, AssertJ |
+| Backend: integração | 63 | Spring Boot Test, MockMvc, Testcontainers (PostgreSQL 16), cliente STOMP real |
+| Mobile | 150 | Jest (jest-expo), React Native Testing Library |
 | E2E | 6 fluxos | Maestro (`mobile/e2e/`) |
 
 ## Backend
@@ -30,6 +30,7 @@ Cada fase entrega testes de **service** (unitários), **controller/API** (integr
 | `BuscaIT` | integração | **"decoração" traz a categoria e quem tem serviço com esse nome**, filtros, ordenação por preço, paginação, recomendados e registro de visualização |
 | `DemoSeederIT` | integração | Seed idempotente e utilizável pela cliente demo |
 | `SolicitacaoIT` | integração | Fluxo completo até concluir, **transições inválidas com 409**, cancelamento, 403 para quem é de fora, validações, anexos e painel |
+| `AvaliacaoIT` | integração | Avaliação de evento concluído, **não avalia duas vezes nem sem ter concluído**, só o cliente do pedido, média atualizada no perfil, na busca e na ordenação por nota |
 | `ChatIT` | integração | Conversa nasce com o pedido, mensagens e não lidas, proposta no chat, histórico paginado, **403 para quem é de fora**, troca **em tempo real via STOMP** entre cliente e empresa, conexão sem token recusada |
 
 Os testes de integração usam um PostgreSQL real em container (Testcontainers). Sem Docker, defina `TEST_DB_URL`.
@@ -45,6 +46,7 @@ Os testes de integração usam um PostgreSQL real em container (Testcontainers).
 | `servicoForm`, `meusServicos`, `editarPerfilEmpresa` | Rascunho × publicação, preço convertido, fotos, exclusão com confirmação, 403 exibido |
 | `inicioCliente`, `buscar`, `perfilEmpresaPublico` | Navegação com filtros, rolagem infinita, estados de carregando/vazio/erro, WhatsApp |
 | `solicitarOrcamento`, `solicitacoesCliente`, `empresaSolicitacoes` | Pedido em 3 etapas, abas por status, aceitar/recusar/cancelar, painel, proposta, conclusão, erro 409 |
+| `avaliacao` | Botão só para concluídos não avaliados, nota obrigatória, destaques e comentário, erro 409 exibido |
 | `chat` | Histórico e card de proposta, envio por WebSocket conectado e por REST desconectado, recebimento em tempo real, aceitar no chat, lista de conversas |
 
 ## E2E (Maestro)

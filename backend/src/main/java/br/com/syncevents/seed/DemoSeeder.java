@@ -2,6 +2,7 @@ package br.com.syncevents.seed;
 
 import java.awt.Color;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.com.syncevents.avaliacao.Avaliacao;
+import br.com.syncevents.avaliacao.AvaliacaoRepository;
 import br.com.syncevents.categoria.Categoria;
+import br.com.syncevents.chat.Conversa;
+import br.com.syncevents.chat.ConversaRepository;
 import br.com.syncevents.categoria.CategoriaRepository;
 import br.com.syncevents.cliente.Cliente;
 import br.com.syncevents.cliente.ClienteRepository;
@@ -30,6 +35,10 @@ import br.com.syncevents.empresa.PortfolioFotoRepository;
 import br.com.syncevents.servico.ModeloPreco;
 import br.com.syncevents.servico.Servico;
 import br.com.syncevents.servico.ServicoRepository;
+import br.com.syncevents.solicitacao.Solicitacao;
+import br.com.syncevents.solicitacao.SolicitacaoRepository;
+import br.com.syncevents.solicitacao.StatusProposta;
+import br.com.syncevents.solicitacao.StatusSolicitacao;
 import br.com.syncevents.storage.StorageService;
 import br.com.syncevents.usuario.TipoUsuario;
 import br.com.syncevents.usuario.Usuario;
@@ -155,11 +164,16 @@ public class DemoSeeder implements ApplicationRunner {
     private final CodigoEmpresaGenerator codigoGenerator;
     private final PasswordEncoder passwordEncoder;
     private final StorageService storage;
+    private final SolicitacaoRepository solicitacaoRepository;
+    private final ConversaRepository conversaRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
 
     public DemoSeeder(UsuarioRepository usuarioRepository, ClienteRepository clienteRepository,
             EmpresaRepository empresaRepository, CategoriaRepository categoriaRepository,
             ServicoRepository servicoRepository, PortfolioFotoRepository portfolioRepository,
-            CodigoEmpresaGenerator codigoGenerator, PasswordEncoder passwordEncoder, StorageService storage) {
+            CodigoEmpresaGenerator codigoGenerator, PasswordEncoder passwordEncoder, StorageService storage,
+            SolicitacaoRepository solicitacaoRepository, ConversaRepository conversaRepository,
+            AvaliacaoRepository avaliacaoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.clienteRepository = clienteRepository;
         this.empresaRepository = empresaRepository;
@@ -169,12 +183,16 @@ public class DemoSeeder implements ApplicationRunner {
         this.codigoGenerator = codigoGenerator;
         this.passwordEncoder = passwordEncoder;
         this.storage = storage;
+        this.solicitacaoRepository = solicitacaoRepository;
+        this.conversaRepository = conversaRepository;
+        this.avaliacaoRepository = avaliacaoRepository;
     }
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
         semear();
+        semearAvaliacoes();
     }
 
     /** Cria os dados se ainda não existirem. Retorna true se criou. */
@@ -225,6 +243,78 @@ public class DemoSeeder implements ApplicationRunner {
         }
         log.info("Dados de demonstração criados: {} empresas e o cliente {} (senha {})", EMPRESAS.size(),
                 EMAIL_CLIENTE, SENHA);
+        return true;
+    }
+
+    record ClienteDemo(String email, String nome, String cidade) {
+    }
+
+    static final List<ClienteDemo> AVALIADORES = List.of(
+            new ClienteDemo("ana@demo.syncevents.com", "Ana Souza", "São Paulo, SP"),
+            new ClienteDemo("bruno@demo.syncevents.com", "Bruno Lima", "Rio de Janeiro, RJ"),
+            new ClienteDemo("carla@demo.syncevents.com", "Carla Mendes", "São Paulo, SP"),
+            new ClienteDemo("diego@demo.syncevents.com", "Diego Rocha", "Belo Horizonte, MG"));
+
+    /** nota, comentário e destaques usados em rodízio */
+    private static final List<Object[]> COMENTARIOS = List.of(
+            new Object[] {5, "Equipe impecável e muito atenciosa. Fez toda a diferença na nossa festa!",
+                new String[] {"ATENDIMENTO", "QUALIDADE"}},
+            new Object[] {5, "Tudo pronto no horário combinado e exatamente como no projeto.",
+                new String[] {"PONTUALIDADE", "QUALIDADE"}},
+            new Object[] {4, "Muito bom! Só demorou um pouco para responder no começo.",
+                new String[] {"QUALIDADE", "CUSTO_BENEFICIO"}},
+            new Object[] {5, "Superou as expectativas. Recomendo de olhos fechados.",
+                new String[] {"ATENDIMENTO", "CUSTO_BENEFICIO", "QUALIDADE"}},
+            new Object[] {3, "Serviço correto, mas esperávamos um pouco mais de capricho nos detalhes.",
+                new String[] {"PONTUALIDADE"}},
+            new Object[] {5, null, new String[] {"ATENDIMENTO"}});
+
+    /**
+     * Avaliações de demonstração (Fase 6). Seguem a regra do sistema: cada uma vem de uma solicitação
+     * CONCLUIDA, com proposta aceita, de um cliente de demonstração. Roda uma vez (se ainda não há avaliações).
+     */
+    @Transactional
+    public boolean semearAvaliacoes() {
+        if (avaliacaoRepository.count() > 0 || !usuarioRepository.existsByEmail(EMPRESAS.get(0).email())) {
+            return false;
+        }
+        String senha = passwordEncoder.encode(SENHA);
+        List<Cliente> clientes = AVALIADORES.stream().map(c -> {
+            Usuario u = usuarioRepository.findByEmail(c.email())
+                    .orElseGet(() -> usuarioRepository.save(new Usuario(c.email(), senha, TipoUsuario.CLIENTE)));
+            return clienteRepository.findByUsuarioId(u.getId())
+                    .orElseGet(() -> clienteRepository.save(new Cliente(u, c.nome(), "11912345678", c.cidade())));
+        }).toList();
+
+        int i = 0;
+        int criadas = 0;
+        for (int e = 0; e < EMPRESAS.size(); e++) {
+            EmpresaDemo d = EMPRESAS.get(e);
+            Empresa empresa = usuarioRepository.findByEmail(d.email())
+                    .flatMap(u -> empresaRepository.findByUsuarioId(u.getId())).orElse(null);
+            if (empresa == null) {
+                continue;
+            }
+            int quantas = 2 + (e % 3); // 2 a 4 avaliações por empresa
+            for (int k = 0; k < quantas; k++, i++) {
+                Cliente cliente = clientes.get(i % clientes.size());
+                Object[] c = COMENTARIOS.get(i % COMENTARIOS.size());
+                Solicitacao s = new Solicitacao(cliente, empresa);
+                s.setTipoEvento(TipoEvento.values()[i % 5]);
+                s.setDataEvento(LocalDate.now().minusDays(15L + i * 9L));
+                s.setQtdConvidados(60 + (i % 5) * 30);
+                s.setLocal(cliente.getCidade());
+                s.setAceiteContato(true);
+                s.adicionarProposta(BigDecimal.valueOf(2000L + (i % 7) * 1500L), "Pacote completo para o evento.")
+                        .setStatus(StatusProposta.ACEITA);
+                s.setStatus(StatusSolicitacao.CONCLUIDA);
+                solicitacaoRepository.save(s);
+                conversaRepository.save(new Conversa(s));
+                avaliacaoRepository.save(new Avaliacao(s, (Integer) c[0], (String) c[1], (String[]) c[2]));
+                criadas++;
+            }
+        }
+        log.info("Avaliações de demonstração criadas: {}", criadas);
         return true;
     }
 

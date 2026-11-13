@@ -118,6 +118,8 @@ export interface EmpresaPublica {
     servicos: number;
     fotos: number;
     naPlataformaDesde: number;
+    /** % de avaliações com nota 4 ou 5 */
+    recomendam?: number;
   };
 }
 
@@ -163,6 +165,8 @@ export interface Solicitacao {
   propostas: Proposta[];
   propostaAtual?: Proposta;
   conversaId?: number;
+  /** o cliente já avaliou (pedidos concluídos) */
+  avaliada: boolean;
 }
 
 export interface Dashboard {
@@ -206,4 +210,23 @@ export interface Conversa {
   ultimaMensagem?: Mensagem;
   naoLidas: number;
   meuUsuarioId: number;
+}
+
+export type Destaque = 'PONTUALIDADE' | 'QUALIDADE' | 'ATENDIMENTO' | 'CUSTO_BENEFICIO';
+
+export interface Avaliacao {
+  id: number;
+  solicitacaoId: number;
+  empresaId: number;
+  nota: number;
+  comentario?: string;
+  destaques: Destaque[];
+  tipoEvento: TipoEvento;
+  autor: { nome: string; fotoUrl?: string };
+  criadoEm: string;
+}
+
+export interface AvaliacoesEmpresa {
+  resumo: { media?: number; total: number; recomendam?: number };
+  avaliacoes: Pagina<Avaliacao>;
 }

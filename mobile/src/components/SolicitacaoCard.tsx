@@ -25,6 +25,8 @@ export interface SolicitacaoCardProps {
   onPress: () => void;
   /** Botão "Responder" (empresa, solicitações novas). */
   onResponder?: () => void;
+  /** Botão "Avaliar empresa" (cliente, evento concluído e ainda não avaliado). */
+  onAvaliar?: () => void;
 }
 
 export function SolicitacaoCard({
@@ -32,6 +34,7 @@ export function SolicitacaoCard({
   quem,
   onPress,
   onResponder,
+  onAvaliar,
 }: SolicitacaoCardProps) {
   const cliente = quem === 'CLIENTE';
   const nome = cliente ? s.empresa.nomeFantasia : s.cliente.nome;
@@ -79,7 +82,15 @@ export function SolicitacaoCard({
             ? `Proposta: ${formatarMoeda(Number(proposta.valor))}`
             : `Enviada ${tempoRelativo(s.criadoEm)}`}
         </Text>
-        {cliente ? (
+        {cliente && onAvaliar ? (
+          <Button
+            testID={`avaliar-${s.id}`}
+            titulo="Avaliar empresa"
+            icone="star"
+            compacto
+            onPress={onAvaliar}
+          />
+        ) : cliente ? (
           <Pressable onPress={onPress} accessibilityRole="button" hitSlop={10} style={styles.link}>
             <Text style={styles.linkTexto}>
               {s.status === 'EM_NEGOCIACAO' ? 'Ver proposta' : 'Ver detalhes'}

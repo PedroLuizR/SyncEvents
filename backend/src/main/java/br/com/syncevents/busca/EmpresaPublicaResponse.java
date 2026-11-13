@@ -26,7 +26,11 @@ public record EmpresaPublicaResponse(
         long totalAvaliacoes,
         Indicadores indicadores) {
 
-    /** Indicadores exibidos no perfil. {@code eventosRealizados} = solicitações concluídas. */
-    public record Indicadores(long eventosRealizados, int servicos, int fotos, int naPlataformaDesde) {
+    /**
+     * Indicadores exibidos no perfil. {@code eventosRealizados} = solicitações concluídas;
+     * {@code recomendam} = % de avaliações com nota 4 ou 5 (null sem avaliações).
+     */
+    public record Indicadores(long eventosRealizados, int servicos, int fotos, int naPlataformaDesde,
+            Integer recomendam) {
     }
 }

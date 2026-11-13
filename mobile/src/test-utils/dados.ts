@@ -89,6 +89,7 @@ export function solicitacao(id: number, extra: Partial<Solicitacao> = {}): Solic
     anexos: [],
     propostas: [],
     conversaId: 11,
+    avaliada: false,
     ...extra,
   };
 }

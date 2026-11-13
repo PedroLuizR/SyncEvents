@@ -13,10 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import br.com.syncevents.categoria.CategoriaResponse;
 
-/**
- * Consultas de descoberta em SQL (busca textual sem acento, relevância e agregações).
- * Avaliações entram na Fase 6: até lá a nota é nula e o total é zero.
- */
+/** Consultas de descoberta em SQL (busca textual sem acento, relevância e agregações). */
 @Repository
 public class BuscaRepository {
 
@@ -26,6 +23,10 @@ public class BuscaRepository {
     private static final String PRECO_A_PARTIR_DE = """
             (SELECT min(s.preco_min) FROM servico s
               WHERE %s AND s.modelo_preco <> 'SOB_CONSULTA' AND s.preco_min IS NOT NULL)""".formatted(SERVICO_VISIVEL);
+
+    private static final String NOTA = """
+            (SELECT round(avg(a.nota)::numeric, 1) FROM avaliacao a WHERE a.empresa_id = e.id)""";
+    private static final String TOTAL_AVALIACOES = "(SELECT count(*) FROM avaliacao a WHERE a.empresa_id = e.id)";
 
     private final NamedParameterJdbcTemplate jdbc;
 
@@ -75,31 +76,33 @@ public class BuscaRepository {
         String colRelevancia = relevancia.isEmpty() ? "0" : String.join(" + ", relevancia);
         String ordem = switch (f.ordenacao()) {
             case PRECO -> "preco_a_partir_de ASC NULLS LAST, e.nome_fantasia";
-            // sem avaliações ainda: "melhor nota" usa relevância/nome até a Fase 6
-            case NOTA, RELEVANCIA -> "relevancia DESC, servicos_visiveis DESC, e.nome_fantasia";
+            case NOTA -> "nota DESC NULLS LAST, total_avaliacoes DESC, relevancia DESC, e.nome_fantasia";
+            case RELEVANCIA -> "relevancia DESC, nota DESC NULLS LAST, servicos_visiveis DESC, e.nome_fantasia";
         };
         params.addValue("limite", f.tamanho());
         params.addValue("offset", (long) f.pagina() * f.tamanho());
         String sql = "SELECT e.id, e.nome_fantasia, e.logo_url, e.capa_url, e.cidade, "
                 + PRECO_A_PARTIR_DE + " AS preco_a_partir_de, "
                 + "(SELECT count(*) FROM servico s WHERE " + SERVICO_VISIVEL + ") AS servicos_visiveis, "
+                + NOTA + " AS nota, " + TOTAL_AVALIACOES + " AS total_avaliacoes, "
                 + colRelevancia + " AS relevancia"
                 + from + " ORDER BY " + ordem + " LIMIT :limite OFFSET :offset";
         return new Resultado(mapear(sql, params), total == null ? 0 : total);
     }
 
-    /** Recomendados: mesma cidade do cliente primeiro, depois quem tem mais serviços publicados. */
+    /** Recomendados: mesma cidade do cliente primeiro, depois melhor nota e mais serviços publicados. */
     public List<EmpresaResumo> recomendadas(String cidade, int limite) {
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("cidade", cidade == null ? "" : FiltroBusca.normalizar(cidade.split(",")[0]) + "%")
                 .addValue("limite", limite);
         String sql = "SELECT e.id, e.nome_fantasia, e.logo_url, e.capa_url, e.cidade, "
                 + PRECO_A_PARTIR_DE + " AS preco_a_partir_de, "
-                + "(SELECT count(*) FROM servico s WHERE " + SERVICO_VISIVEL + ") AS servicos_visiveis "
+                + "(SELECT count(*) FROM servico s WHERE " + SERVICO_VISIVEL + ") AS servicos_visiveis, "
+                + NOTA + " AS nota, " + TOTAL_AVALIACOES + " AS total_avaliacoes "
                 + "FROM empresa e JOIN usuario u ON u.id = e.usuario_id WHERE u.ativo "
                 + "AND EXISTS (SELECT 1 FROM servico s WHERE " + SERVICO_VISIVEL + ") "
                 + "ORDER BY (CASE WHEN :cidade <> '' AND lower(unaccent(e.cidade)) LIKE :cidade THEN 0 ELSE 1 END), "
-                + "servicos_visiveis DESC, e.criado_em DESC LIMIT :limite";
+                + "nota DESC NULLS LAST, servicos_visiveis DESC, e.criado_em DESC LIMIT :limite";
         return mapear(sql, params);
     }
 
@@ -108,7 +111,8 @@ public class BuscaRepository {
         jdbc.query(sql, params, rs -> {
             linhas.put(rs.getLong("id"), new Object[] {
                 rs.getString("nome_fantasia"), rs.getString("logo_url"), rs.getString("capa_url"),
-                rs.getString("cidade"), rs.getBigDecimal("preco_a_partir_de")});
+                rs.getString("cidade"), rs.getBigDecimal("preco_a_partir_de"), rs.getBigDecimal("nota"),
+                rs.getLong("total_avaliacoes")});
         });
         if (linhas.isEmpty()) {
             return List.of();
@@ -116,7 +120,8 @@ public class BuscaRepository {
         Map<Long, List<CategoriaResponse>> categorias = categoriasDe(linhas.keySet());
         List<EmpresaResumo> lista = new ArrayList<>();
         linhas.forEach((id, l) -> lista.add(new EmpresaResumo(id, (String) l[0], (String) l[1], (String) l[2],
-                (String) l[3], categorias.getOrDefault(id, List.of()), null, 0, (BigDecimal) l[4])));
+                (String) l[3], categorias.getOrDefault(id, List.of()), (BigDecimal) l[5], (Long) l[6],
+                (BigDecimal) l[4])));
         return lista;
     }
 

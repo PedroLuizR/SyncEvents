@@ -16,7 +16,18 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { urlArquivo } from '@/api/arquivos';
 import { mensagemDeErro } from '@/api/client';
 import type { EmpresaPublica, Servico } from '@/api/types';
-import { Avatar, Button, Card, EmptyState, Header, Nota, SectionHeader, Text } from '@/components';
+import {
+  AvaliacaoCard,
+  Avatar,
+  Button,
+  Card,
+  EmptyState,
+  Header,
+  Nota,
+  SectionHeader,
+  Text,
+} from '@/components';
+import { useAvaliacoesEmpresa } from '@/hooks/useAvaliacoes';
 import { useEmpresaPublica } from '@/hooks/useBusca';
 import { colors, fonts, radii, shadows, spacing, touchTarget } from '@/theme';
 import { linkWhatsapp } from '@/utils/whatsapp';
@@ -53,6 +64,8 @@ export default function PerfilEmpresaPublicoScreen() {
 
 function Conteudo({ e }: { e: EmpresaPublica }) {
   const insets = useSafeAreaInsets();
+  const avaliacoes = useAvaliacoesEmpresa(e.id, 5);
+  const lista = avaliacoes.data?.avaliacoes.conteudo ?? [];
   const compartilhar = () =>
     Share.share({
       message: `${e.nomeFantasia} no SyncEvents: ${e.categorias.map((c) => c.nome).join(', ')} em ${e.cidade}.`,
@@ -112,13 +125,19 @@ function Conteudo({ e }: { e: EmpresaPublica }) {
 
           <View style={styles.indicadores}>
             <Indicador
+              valor={String(e.indicadores.eventosRealizados)}
+              rotulo={
+                e.indicadores.eventosRealizados === 1 ? 'evento realizado' : 'eventos realizados'
+              }
+            />
+            {e.indicadores.recomendam != null ? (
+              <Indicador valor={`${e.indicadores.recomendam}%`} rotulo="recomendam" />
+            ) : (
+              <Indicador valor={String(e.indicadores.fotos)} rotulo="fotos no portfólio" />
+            )}
+            <Indicador
               valor={String(e.indicadores.servicos)}
               rotulo={e.indicadores.servicos === 1 ? 'serviço' : 'serviços'}
-            />
-            <Indicador valor={String(e.indicadores.fotos)} rotulo="fotos no portfólio" />
-            <Indicador
-              valor={String(e.indicadores.naPlataformaDesde)}
-              rotulo="no SyncEvents desde"
             />
           </View>
 
@@ -170,14 +189,20 @@ function Conteudo({ e }: { e: EmpresaPublica }) {
           </View>
 
           <View style={styles.secao}>
-            <SectionHeader titulo="Avaliações" />
-            <Card>
-              <EmptyState
-                titulo="Ainda sem avaliações"
-                descricao="As avaliações aparecem aqui depois dos primeiros eventos concluídos."
-                icone="star"
-              />
-            </Card>
+            <SectionHeader
+              titulo={e.totalAvaliacoes > 0 ? `Avaliações (${e.totalAvaliacoes})` : 'Avaliações'}
+            />
+            {lista.length === 0 ? (
+              <Card>
+                <EmptyState
+                  titulo="Ainda sem avaliações"
+                  descricao="As avaliações aparecem aqui depois dos primeiros eventos concluídos."
+                  icone="star"
+                />
+              </Card>
+            ) : (
+              lista.map((a) => <AvaliacaoCard key={a.id} avaliacao={a} />)
+            )}
           </View>
 
           {e.endereco ? (

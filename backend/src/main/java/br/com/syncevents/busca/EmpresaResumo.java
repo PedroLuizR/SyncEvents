@@ -8,7 +8,7 @@ import br.com.syncevents.categoria.CategoriaResponse;
 /**
  * Card de empresa nas listas (busca e recomendados).
  *
- * @param nota            média das avaliações (null enquanto não houver avaliações)
+ * @param nota            média das avaliações com 1 casa (null sem avaliações)
  * @param precoAPartirDe  menor preço entre os serviços publicados com preço
  */
 public record EmpresaResumo(
