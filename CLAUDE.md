@@ -4,7 +4,7 @@ O plano completo de implementação (contexto, stack, modelo de dados, API, fase
 
 ## Estado atual
 
-- Fases 0 a 5 concluídas (ver tabela no README). Próximas: Fase 6 (avaliações) e Fase 7 (acabamento e APK).
+- Fases 0 a 7 concluídas (ver tabela no README). O APK é gerado pelo GitHub Actions (`.github/workflows/android-apk.yml`) e publicado em Releases.
 - Design: `docs/design/00-visao-geral.png` (sem link do Figma).
 - Decisões e diferenças em relação ao Figma: `docs/decisoes.md` (registre lá qualquer escolha nova, numerada).
 - Arquitetura: `docs/arquitetura.md` · API: `docs/api.md` · testes: `docs/testes.md`.
@@ -15,6 +15,7 @@ O plano completo de implementação (contexto, stack, modelo de dados, API, fase
 - Dependências do app: `npx expo install` (use `EXPO_OFFLINE=1` se a API do Expo estiver bloqueada).
 - Na web (só para visualização) a sessão fica em memória: recarregar a página desloga. Se o Metro servir código antigo, reinicie com `--clear`.
 - Testes de integração do backend usam Testcontainers (Docker). Sem Docker: `TEST_DB_URL=... mvn verify`.
+- O ambiente de desenvolvimento não acessa `dl.google.com` (Android SDK): não tente compilar o APK localmente; `expo prebuild` funciona.
 - Dados de demonstração no perfil `dev`: `marina@demo.syncevents.com` e `contato@aurora.demo.syncevents.com`, senha `Senha@123`.
 
 ## Ao final de cada fase

@@ -1,9 +1,9 @@
 import { Client, type IMessage } from '@stomp/stompjs';
 
-import { API_URL } from '@/api/config';
+import { apiUrl } from '@/api/config';
 
 /** http://10.0.2.2:8080 → ws://10.0.2.2:8080/ws */
-export function urlWebSocket(base: string = API_URL): string {
+export function urlWebSocket(base: string = apiUrl()): string {
   return `${base.replace(/^http/, 'ws').replace(/\/$/, '')}/ws`;
 }
 

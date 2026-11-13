@@ -1,0 +1,96 @@
+# Fluxo completo do CLIENTE: cadastro → busca → orçamento → chat → avaliação.
+# Pré-requisitos: backend rodando (docker compose up -d) e o APK instalado.
+# A parte final (avaliação) precisa que a empresa conclua o pedido: rode depois completo-empresa.yaml
+# e então completo-cliente-avaliacao.yaml.
+# Rodar:  maestro test e2e/completo-cliente.yaml
+appId: br.com.syncevents
+---
+- launchApp:
+    clearState: true
+
+# Cadastro
+- tapOn:
+    id: 'continuar'
+- tapOn: 'Cadastre-se'
+- tapOn:
+    id: 'campo-nome'
+- inputText: 'Teste Maestro'
+- tapOn:
+    id: 'campo-email'
+- inputText: 'maestro.cliente@email.com'
+- tapOn:
+    id: 'campo-telefone'
+- inputText: '11987654321'
+- tapOn:
+    id: 'campo-cidade'
+- inputText: 'São Paulo, SP'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn: 'Casamento'
+- scrollUntilVisible:
+    element:
+      id: 'aceite-termos'
+- tapOn:
+    id: 'aceite-termos'
+- tapOn:
+    id: 'continuar-cadastro'
+- tapOn:
+    id: 'criar-conta'
+- assertVisible: 'Cadastro realizado! Entre com seu e-mail e senha.'
+
+# Login
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- assertVisible: 'Vamos celebrar?'
+
+# Busca e perfil
+- tapOn:
+    id: 'busca-inicio'
+- inputText: 'ateliê aurora'
+- pressKey: Enter
+- tapOn: 'Ateliê Aurora Eventos'
+- assertVisible: 'Portfólio'
+
+# Orçamento
+- tapOn:
+    id: 'solicitar-orcamento'
+- tapOn:
+    id: 'campo-data'
+- tapOn: 'OK'
+- tapOn:
+    id: 'campo-convidados'
+- inputText: '120'
+- tapOn:
+    id: 'campo-local'
+- inputText: 'Espaço Jardim das Oliveiras, Cotia'
+- hideKeyboard
+- tapOn: 'Casamento'
+- scrollUntilVisible:
+    element:
+      id: 'aceite-contato'
+- tapOn:
+    id: 'aceite-contato'
+- tapOn:
+    id: 'revisar'
+- tapOn:
+    id: 'enviar-solicitacao'
+- assertVisible: 'Solicitação enviada!'
+- tapOn:
+    id: 'ver-solicitacao'
+
+# Chat
+- tapOn: 'Ver detalhes'
+- tapOn:
+    id: 'abrir-conversa'
+- tapOn:
+    id: 'campo-mensagem'
+- inputText: 'Olá! Vocês têm disponibilidade nessa data?'
+- tapOn:
+    id: 'enviar-mensagem'
+- assertVisible: 'Olá! Vocês têm disponibilidade nessa data?'

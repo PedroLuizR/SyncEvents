@@ -87,6 +87,7 @@ export default function BuscarScreen() {
         <Pressable
           testID="abrir-filtros"
           onPress={() => setFiltrosAbertos(true)}
+          hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel={`Filtros${qtdFiltros ? `, ${qtdFiltros} ativos` : ''}`}
           style={styles.botaoFiltros}

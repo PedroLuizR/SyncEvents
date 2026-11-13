@@ -78,7 +78,12 @@ export function FormAvaliacao({
 
   return (
     <Modal visible={solicitacao != null} transparent animationType="fade" onRequestClose={fechar}>
-      <Pressable style={styles.fundo} onPress={fechar} accessibilityLabel="Fechar avaliação" />
+      <Pressable
+        accessibilityRole="button"
+        style={styles.fundo}
+        onPress={fechar}
+        accessibilityLabel="Fechar avaliação"
+      />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View
           style={[styles.folha, { paddingBottom: insets.bottom + spacing.lg }]}

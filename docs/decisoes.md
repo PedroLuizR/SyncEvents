@@ -102,6 +102,36 @@ Todas as escolhas feitas durante o desenvolvimento, principalmente onde o plano 
 | 64 | O seed cria clientes extras (Ana, Bruno, Carla, Diego) com **pedidos concluídos e proposta aceita** antes de criar as avaliações de demonstração. | Mantém a regra "só quem concluiu pode avaliar" também nos dados de exemplo. |
 | 65 | A avaliação não pode ser editada nem apagada pelo cliente. | O plano define uma avaliação por solicitação; edição não está no escopo. |
 
+## Fase 7
+
+| # | Decisão | Motivo |
+|---|---|---|
+| 66 | **Tela "Servidor"** (link na tela de boas-vindas) para trocar o endereço do backend no próprio app, com teste de conexão. | O mesmo APK precisa funcionar no emulador (10.0.2.2) e num celular na rede local (IP do computador). |
+| 67 | O APK permite tráfego HTTP sem TLS (`usesCleartextTraffic`, via `expo-build-properties`). | O backend local roda em `http://`. Em produção, usar HTTPS e desligar isso. |
+| 68 | O APK de release é **assinado com a chave de depuração** e gerado no **GitHub Actions** (não localmente). | Suficiente para testes. O ambiente de desenvolvimento não tem acesso ao Android SDK; os runners do GitHub já o trazem. |
+| 69 | Ícone, ícone adaptativo e splash gerados com a identidade do app ("S" em Playfair sobre o bordô), no lugar dos ícones padrão do Expo. | O Figma não traz um ícone de app. |
+| 70 | `backend/Dockerfile` e o serviço `backend` no `docker-compose.yml`: `docker compose up -d --build` sobe tudo com os dados de demonstração. | Quem testa o APK não precisa instalar Java nem Maven. |
+| 71 | Revisão de acessibilidade: todo elemento tocável tem papel (`accessibilityRole`) e rótulo; áreas de toque de pelo menos 48dp (com `hitSlop` nos chips e botões compactos); mensagens de erro anunciadas (`accessibilityLiveRegion`). | Item da Fase 7 do plano. |
+| 72 | APK com as arquiteturas `armeabi-v7a`, `arm64-v8a` e `x86_64` (sem `x86` de 32 bits). | Cobre celulares e emuladores atuais com um arquivo menor. |
+
+## Diferenças em relação ao Figma (revisão tela a tela)
+
+| Tela | Diferença | Motivo / decisão |
+|---|---|---|
+| 1 · Boas-vindas | Foto de casamento trocada por fundo bordô com "luzes"; link "Servidor" no rodapé | Sem a imagem original (20); testes do APK (66) |
+| 2 · Login | Igual ao Figma; Google e "Esqueci minha senha" mostram "Em breve" | Fora do MVP |
+| 3 · Cadastro de cliente | Cidade em texto livre (sem lista); etapa 2 com CPF e foto opcionais | 11, 17 |
+| 4 · Cadastro de empresa | Etapa 2 com senha, endereço opcional e termos; CNPJ só com 14 dígitos | 12, 13 |
+| 5 · Início | Sem sino de notificações; ícone de conversas no lugar | 37, 59 |
+| 6 · Resultados | Sem distância, favoritos, mapa e filtro de faixa de preço | 37 |
+| 7 · Perfil da empresa | Sem "tempo de resposta" e sem favoritar; demais indicadores reais | 62, 63 |
+| 8 · Solicitação de orçamento | Igual ao Figma, com etapa de revisão e confirmação | 48 |
+| 9 · Chat | Sem anexos, áudio, "digitando…" e "online"; mostra o estado da conexão | 60 |
+| 10 · Avaliação | Igual ao Figma (abas, resumo e bottom sheet) | 61 |
+| 11 · Painel | Período fixo de 30 dias (seletor só visual); "novos pedidos" = solicitações recebidas | 46 |
+| 12 · Cadastro de serviço | Abre sem a barra de abas | 30 |
+| Geral | Cores e fontes aproximadas a partir da imagem (Playfair Display + Inter) | 2, 3 |
+
 ## Pontos em aberto (aguardando o usuário)
 
 1. ~~Cadastro de cliente, etapa 2~~ → decidido (decisão 11).

@@ -1,16 +1,18 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { TipoUsuario } from '@/api/types';
 import { Button, OptionCard, Text } from '@/components';
 import { HeroBoasVindas } from '@/components/HeroBoasVindas';
-import { colors, spacing } from '@/theme';
+import { useConfigStore } from '@/store/config';
+import { colors, fonts, spacing } from '@/theme';
 
 /** Tela 1 do Figma: boas-vindas com a escolha do perfil. */
 export default function BoasVindasScreen() {
   const [tipo, setTipo] = useState<TipoUsuario>('CLIENTE');
+  const servidor = useConfigStore((s) => s.apiUrl);
 
   return (
     <SafeAreaView style={styles.tela} edges={['bottom']}>
@@ -44,6 +46,20 @@ export default function BoasVindasScreen() {
           larguraTotal
           onPress={() => router.push({ pathname: '/login', params: { tipo } })}
         />
+        <Pressable
+          testID="configurar-servidor"
+          onPress={() => router.push('/servidor')}
+          accessibilityRole="button"
+          accessibilityLabel={`Configurar servidor. Atual: ${servidor}`}
+          hitSlop={8}
+          style={styles.servidor}
+        >
+          <Text variant="caption">
+            Servidor:{' '}
+            <Text style={styles.servidorLink}>{servidor.replace(/^https?:\/\//, '')}</Text> ·
+            alterar
+          </Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -53,5 +69,17 @@ const styles = StyleSheet.create({
   tela: { flex: 1, backgroundColor: colors.background },
   rolagem: { flexGrow: 1 },
   conteudo: { padding: spacing.xl, gap: spacing.md },
-  rodape: { paddingHorizontal: spacing.xl, paddingBottom: spacing.lg, paddingTop: spacing.sm },
+  rodape: {
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.lg,
+    paddingTop: spacing.sm,
+    gap: spacing.sm,
+  },
+  servidor: {
+    alignSelf: 'center',
+    paddingVertical: spacing.xs,
+    minHeight: 32,
+    justifyContent: 'center',
+  },
+  servidorLink: { fontFamily: fonts.sansSemibold, fontSize: 11, color: colors.primary },
 });

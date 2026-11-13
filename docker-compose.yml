@@ -17,6 +17,25 @@ services:
       timeout: 5s
       retries: 10
 
+  # Backend (perfil dev: migrations + dados de demonstração). Para rodar pelo Maven, suba só o postgres.
+  backend:
+    build: ./backend
+    image: syncevents-backend
+    container_name: syncevents-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-syncevents}
+      DB_USER: ${DB_USER:-syncevents}
+      DB_PASSWORD: ${DB_PASSWORD:-syncevents}
+      APP_STORAGE_DIR: /app/uploads
+    ports:
+      - "8080:8080"
+    volumes:
+      - uploads:/app/uploads
+
   # Opcional: docker compose --profile tools up -d  →  http://localhost:5050
   pgadmin:
     image: dpage/pgadmin4:8
@@ -32,3 +51,4 @@ services:
 
 volumes:
   pgdata:
+  uploads:

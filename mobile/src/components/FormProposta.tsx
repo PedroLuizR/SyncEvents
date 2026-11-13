@@ -38,7 +38,12 @@ export function FormProposta({
 
   return (
     <Modal visible={visivel} transparent animationType="fade" onRequestClose={onFechar}>
-      <Pressable style={styles.fundo} onPress={onFechar} accessibilityLabel="Fechar" />
+      <Pressable
+        accessibilityRole="button"
+        style={styles.fundo}
+        onPress={onFechar}
+        accessibilityLabel="Fechar"
+      />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={[styles.folha, { paddingBottom: insets.bottom + spacing.lg }]}>
           <View style={styles.alca} />

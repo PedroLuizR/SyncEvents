@@ -2,6 +2,7 @@ import { isAxiosError } from 'axios';
 import { useEffect } from 'react';
 
 import { buscarMe } from '@/api/auth';
+import { useConfigStore } from '@/store/config';
 import { lerTokenSalvo, useSessionStore } from '@/store/session';
 
 /**
@@ -15,6 +16,7 @@ export function useBootstrapSessao() {
   useEffect(() => {
     let ativo = true;
     (async () => {
+      await useConfigStore.getState().carregar();
       const token = await lerTokenSalvo();
       if (!token) {
         if (ativo) restaurada(null, null);

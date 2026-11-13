@@ -1,0 +1,101 @@
+# Fluxo completo da EMPRESA: cadastro → serviço → responder → proposta (e conclusão do pedido de demonstração).
+# Pré-requisitos: backend rodando e o APK instalado. Rode completo-cliente.yaml antes para haver um pedido.
+# Rodar:  maestro test e2e/completo-empresa.yaml
+appId: br.com.syncevents
+---
+- launchApp:
+    clearState: true
+
+# Cadastro de uma empresa nova
+- tapOn:
+    id: 'opcao-empresa'
+- tapOn:
+    id: 'continuar'
+- tapOn: 'Cadastre-se'
+- tapOn:
+    id: 'campo-nome-fantasia'
+- inputText: 'Maestro Eventos'
+- tapOn:
+    id: 'campo-cnpj'
+- inputText: '12345678000199'
+- tapOn:
+    id: 'campo-email'
+- inputText: 'maestro.empresa@email.com'
+- tapOn:
+    id: 'campo-telefone'
+- inputText: '11987654321'
+- tapOn:
+    id: 'campo-cidade'
+- inputText: 'São Paulo, SP'
+- hideKeyboard
+- tapOn: 'Decoração'
+- tapOn:
+    id: 'salvar-continuar'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- tapOn:
+    id: 'campo-confirmar-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'aceite-termos'
+- tapOn:
+    id: 'criar-conta'
+- assertVisible: 'Cadastro realizado! Entre com seu e-mail e senha.'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- assertVisible: 'Visão geral'
+
+# Serviço
+- tapOn:
+    id: 'tab-servicos'
+- tapOn: 'Cadastrar serviço'
+- tapOn:
+    id: 'campo-nome-servico'
+- inputText: 'Decoração para casamentos'
+- tapOn:
+    id: 'campo-categoria'
+- tapOn: 'Decoração'
+- tapOn:
+    id: 'campo-descricao'
+- inputText: 'Projeto completo com montagem.'
+- tapOn:
+    id: 'campo-preco-min'
+- inputText: '280000'
+- hideKeyboard
+- tapOn:
+    id: 'publicar-servico'
+- assertVisible: 'a partir de R$ 2.800'
+
+# Responder o pedido da cliente com a conta de demonstração da Aurora
+- launchApp:
+    clearState: true
+- tapOn:
+    id: 'opcao-empresa'
+- tapOn:
+    id: 'continuar'
+- tapOn:
+    id: 'campo-login'
+- inputText: 'contato@aurora.demo.syncevents.com'
+- tapOn:
+    id: 'campo-senha'
+- inputText: 'Senha@123'
+- hideKeyboard
+- tapOn:
+    id: 'entrar'
+- tapOn: 'Responder'
+- tapOn:
+    id: 'proposta-valor'
+- inputText: '1050000'
+- tapOn:
+    id: 'proposta-descricao'
+- inputText: 'Decoração completa com montagem e desmontagem'
+- hideKeyboard
+- tapOn:
+    id: 'confirmar-proposta'
+- assertVisible: 'Proposta enviada. Aguardando a resposta do cliente.'

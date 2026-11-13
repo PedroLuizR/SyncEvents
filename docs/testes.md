@@ -1,15 +1,15 @@
 # Testes
 
 Cada fase entrega testes de **service** (unitários), **controller/API** (integração com MockMvc e Postgres real),
-**regras de autorização** e, no app, **validação de formulários e telas**. Antes de cada commit rodam:
+**regras de autorização** e, no app, **validação de formulários e telas**. Antes de cada commit rodam (e o GitHub Actions repete a cada push, em `.github/workflows/ci.yml`):
 `mvn verify` no backend e `npm test`, `npm run typecheck`, `npm run lint` e `prettier --check` no mobile.
 
 | Onde | Testes | Ferramentas |
 |---|---|---|
 | Backend: unitários | 94 | JUnit 5, Mockito, AssertJ |
 | Backend: integração | 63 | Spring Boot Test, MockMvc, Testcontainers (PostgreSQL 16), cliente STOMP real |
-| Mobile | 150 | Jest (jest-expo), React Native Testing Library |
-| E2E | 6 fluxos | Maestro (`mobile/e2e/`) |
+| Mobile | 151 | Jest (jest-expo), React Native Testing Library |
+| E2E | 9 fluxos | Maestro (`mobile/e2e/`) |
 
 ## Backend
 
@@ -59,7 +59,10 @@ Os testes de integração usam um PostgreSQL real em container (Testcontainers).
 | Cliente busca e abre um perfil | `e2e/fase3-descoberta-cliente.yaml` |
 | Pedido de orçamento e proposta | `e2e/fase4-orcamento.yaml` |
 | Chat | `e2e/fase5-chat.yaml` |
+| **Cliente completo:** cadastro → busca → orçamento → chat | `e2e/completo-cliente.yaml` |
+| **Empresa completa:** cadastro → serviço → responder → proposta | `e2e/completo-empresa.yaml` |
+| Cliente aceita a proposta (e depois avalia) | `e2e/completo-cliente-avaliacao.yaml` |
 
-Os fluxos Maestro precisam do app instalado num emulador Android e ainda não foram executados neste ambiente
-(sem emulador). Cada fase também foi verificada de ponta a ponta na versão web do app, com o backend e o banco reais;
+Os fluxos Maestro precisam do APK instalado num emulador Android (`maestro test e2e/<fluxo>.yaml`) e ainda não foram
+executados (o ambiente de desenvolvimento não tem emulador). Cada fase também foi verificada de ponta a ponta na versão web do app, com o backend e o banco reais;
 os prints estão em [`docs/telas/`](telas/).

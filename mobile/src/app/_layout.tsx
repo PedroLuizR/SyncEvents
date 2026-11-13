@@ -26,6 +26,7 @@ function Navegacao() {
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="catalogo" />
+        <Stack.Screen name="servidor" />
       </Stack.Protected>
 
       {/* Área do cliente */}

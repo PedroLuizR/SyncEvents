@@ -41,7 +41,12 @@ export function FiltrosBusca({
 
   return (
     <Modal visible={visivel} transparent animationType="fade" onRequestClose={onFechar}>
-      <Pressable style={styles.fundo} onPress={onFechar} accessibilityLabel="Fechar filtros" />
+      <Pressable
+        accessibilityRole="button"
+        style={styles.fundo}
+        onPress={onFechar}
+        accessibilityLabel="Fechar filtros"
+      />
       <View style={[styles.folha, { paddingBottom: insets.bottom + spacing.lg }]}>
         <View style={styles.alca} />
         <Text variant="subtitle">Filtros</Text>

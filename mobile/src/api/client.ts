@@ -2,7 +2,7 @@ import { AxiosError, create, isAxiosError } from 'axios';
 
 import { useSessionStore } from '@/store/session';
 
-import { API_PREFIX, API_URL } from './config';
+import { API_PREFIX, apiUrl } from './config';
 
 /** Formato de erro padrão do backend. */
 export interface ApiErro {
@@ -12,12 +12,11 @@ export interface ApiErro {
   campos?: Record<string, string>;
 }
 
-export const api = create({
-  baseURL: `${API_URL}${API_PREFIX}`,
-  timeout: 15000,
-});
+export const api = create({ timeout: 15000 });
 
 api.interceptors.request.use((config) => {
+  // o endereço pode mudar em tempo de execução (tela "Servidor")
+  config.baseURL = `${apiUrl()}${API_PREFIX}`;
   const token = useSessionStore.getState().token;
   if (token) {
     config.headers.set('Authorization', `Bearer ${token}`);

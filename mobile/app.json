@@ -8,7 +8,8 @@
     "scheme": "syncevents",
     "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/images/icon.png",
+      "bundleIdentifier": "br.com.syncevents"
     },
     "android": {
       "adaptiveIcon": {
@@ -18,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "br.com.syncevents"
+      "package": "br.com.syncevents",
+      "versionCode": 1
     },
     "web": {
       "output": "server",
@@ -31,7 +33,7 @@
         {
           "backgroundColor": "#F8F2EC",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 120
         }
       ],
       "expo-secure-store",
@@ -41,11 +43,20 @@
         {
           "photosPermission": "O SyncEvents usa suas fotos para o logo, a foto de perfil e o portfólio."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": false,
       "reactCompiler": true
-    }
+    },
+    "description": "Conecta clientes a empresas organizadoras de eventos."
   }
 }

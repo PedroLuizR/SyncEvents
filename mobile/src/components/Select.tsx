@@ -67,6 +67,7 @@ export function Select<T extends string | number>({
         onRequestClose={() => setAberto(false)}
       >
         <Pressable
+          accessibilityRole="button"
           style={styles.fundo}
           onPress={() => setAberto(false)}
           accessibilityLabel="Fechar"

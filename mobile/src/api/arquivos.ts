@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 import type { ArquivoImagem } from '@/components/ImagePickerField';
 
-import { API_URL } from './config';
+import { apiUrl } from './config';
 
 /**
  * Converte a imagem escolhida para o formato do FormData.
@@ -19,7 +19,7 @@ export async function arquivoParaForm(arquivo: ArquivoImagem): Promise<Blob> {
 /** Converte "/files/..." do backend em URL absoluta. */
 export function urlArquivo(caminho?: string | null): string | undefined {
   if (!caminho) return undefined;
-  return caminho.startsWith('http') ? caminho : `${API_URL}${caminho}`;
+  return caminho.startsWith('http') ? caminho : `${apiUrl()}${caminho}`;
 }
 
 /** Monta um FormData ignorando campos vazios; arrays viram campos repetidos. */

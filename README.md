@@ -29,9 +29,9 @@ responde pedidos e acompanha seus indicadores.
 | 4 | Pedido de orçamento, propostas, gestão pela empresa, painel com indicadores | ID08, ID10 | ✅ |
 | 5 | Chat em tempo real (WebSocket/STOMP) com propostas na conversa | ID09 | ✅ |
 | 6 | Avaliações (nota, destaques, média e % que recomendam no perfil e na busca) | ID11 | ✅ |
-| 7 | Acabamento: revisão visual, acessibilidade, fluxos Maestro completos, APK de release | — | ⏳ |
+| 7 | Acabamento: revisão visual, acessibilidade, ícone, tela de servidor, fluxos Maestro completos, APK de release | — | ✅ |
 
-Números atuais: **157 testes no backend** (94 unitários + 63 de integração com Postgres real) e **150 no mobile**,
+Números atuais: **157 testes no backend** (94 unitários + 63 de integração com Postgres real) e **151 no mobile**,
 todos passando, com typecheck, lint e Prettier sem erros.
 
 ## Funcionalidades
@@ -54,16 +54,36 @@ todos passando, com typecheck, lint e Prettier sem erros.
 - Gestão das solicitações: em análise, proposta, recusa e conclusão (máquina de estados validada no backend).
 - Chat em tempo real com cada cliente.
 
-## Como rodar
+## Testar o APK (Android)
+
+1. **Suba o backend** no computador (precisa só do Docker):
+   ```bash
+   docker compose up -d --build
+   ```
+   Isso sobe o PostgreSQL e o backend em http://localhost:8080, com os dados de demonstração.
+2. **Baixe o APK** na aba [Releases](https://github.com/PedroLuizR/SyncEvents/releases) do repositório
+   (`SyncEvents-v1.0.0-buildN.apk`). Ele é gerado pelo GitHub Actions a cada mudança no app
+   (workflow [`android-apk.yml`](.github/workflows/android-apk.yml)); também fica como *artifact* em Actions → "APK Android".
+3. **Instale:** no emulador, arraste o arquivo para a janela; no celular, abra o arquivo e permita "instalar apps desta fonte".
+4. **Aponte para o servidor:** na tela de boas-vindas, toque em **"Servidor: … · alterar"**.
+   - Emulador Android: `10.0.2.2:8080` (já é o padrão).
+   - Celular: o IP do computador na mesma rede Wi-Fi, por exemplo `192.168.0.10:8080`
+     (no Windows: `ipconfig`; no Linux/macOS: `ip addr` / `ifconfig`). Libere a porta 8080 no firewall se necessário.
+   - Toque em **Testar e salvar**: o app confere se o backend responde.
+5. **Entre** com uma conta de demonstração (abaixo) ou crie uma nova.
+
+> O APK é assinado com a chave de depuração (suficiente para testes; para publicar na Play Store, gere uma chave de release).
+
+## Como rodar (desenvolvimento)
 
 **Pré-requisitos:** Docker · Java 21 + Maven 3.9 · Node 20+ · Android Studio com emulador (ou aparelho).
 
 ```bash
-# 1. Banco de dados
+# 1. Banco de dados (ou "docker compose up -d --build" para subir banco + backend)
 cp .env.example .env
 docker compose up -d postgres
 
-# 2. Backend (perfil dev: migrations + dados de demonstração na primeira vez)
+# 2. Backend pelo Maven (perfil dev: migrations + dados de demonstração na primeira vez)
 cd backend
 mvn spring-boot:run
 
@@ -91,8 +111,9 @@ npx expo run:android      # ou: npx expo start --web  (só para ver a interface 
 |---|---|---|
 | Cliente | `marina@demo.syncevents.com` | `Senha@123` |
 | Empresa | `contato@aurora.demo.syncevents.com` | `Senha@123` |
+| Outros clientes (com avaliações) | `ana@`, `bruno@`, `carla@`, `diego@demo.syncevents.com` | `Senha@123` |
 
-São criadas 10 empresas com logo, capa, portfólio e serviços (lista em
+São criadas 10 empresas com logo, capa, portfólio, serviços e 29 avaliações (lista em
 [`DemoSeeder.java`](backend/src/main/java/br/com/syncevents/seed/DemoSeeder.java)). Para desligar: `APP_SEED_DEMO=false`.
 
 ## Testes
@@ -103,10 +124,10 @@ TEST_DB_URL=jdbc:postgresql://localhost:5432/syncevents_test mvn verify   # sem 
 
 cd mobile
 npm test && npm run typecheck && npm run lint && npx prettier --check .
-maestro test e2e/                              # E2E com o app instalado no emulador
+maestro test e2e/completo-cliente.yaml         # E2E com o APK instalado no emulador (ver docs/testes.md)
 ```
 
-O que cada suíte cobre: [`docs/testes.md`](docs/testes.md).
+O que cada suíte cobre: [`docs/testes.md`](docs/testes.md). No GitHub, o workflow [`ci.yml`](.github/workflows/ci.yml) roda os testes do backend e do app a cada push.
 
 ## Documentação
 
@@ -114,7 +135,8 @@ O que cada suíte cobre: [`docs/testes.md`](docs/testes.md).
 |---|---|
 | [`docs/arquitetura.md`](docs/arquitetura.md) | Visão geral, pacotes, telas, modelo de dados, fluxos de autenticação, orçamento e chat (com diagramas) |
 | [`docs/api.md`](docs/api.md) | Contrato da API REST e do WebSocket, fase a fase, com exemplos e regras |
-| [`docs/decisoes.md`](docs/decisoes.md) | Todas as decisões tomadas e diferenças em relação ao Figma (60 itens) |
+| [`docs/decisoes.md`](docs/decisoes.md) | Todas as decisões tomadas e a lista de diferenças em relação ao Figma |
+| [`docs/SyncEvents-Documentacao.pdf`](docs/SyncEvents-Documentacao.pdf) | Toda a documentação num PDF |
 | [`docs/testes.md`](docs/testes.md) | Estratégia de testes e o que cada suíte verifica |
 | [`docs/telas/`](docs/telas/) | Prints de cada fase rodando contra o backend real |
 | [`SYNCEVENTS_PLANO.md`](SYNCEVENTS_PLANO.md) | Plano original de implementação (produto, regras, fases) |
@@ -123,9 +145,10 @@ O que cada suíte cobre: [`docs/testes.md`](docs/testes.md).
 
 ```
 syncevents/
-├── docker-compose.yml        PostgreSQL 16 (+ pgAdmin opcional)
+├── docker-compose.yml        PostgreSQL 16 + backend (+ pgAdmin opcional)
+├── .github/workflows/        CI (testes) e geração do APK
 ├── backend/                  Spring Boot, pacote por domínio em br.com.syncevents.*
-│   └── src/main/resources/db/migration   V1…V6 (Flyway)
+│   └── src/main/resources/db/migration   V1…V7 (Flyway)
 ├── mobile/                   Expo
 │   ├── src/app/              rotas (Expo Router): (auth), cliente, empresa, chat, conversas
 │   ├── src/components/       design system

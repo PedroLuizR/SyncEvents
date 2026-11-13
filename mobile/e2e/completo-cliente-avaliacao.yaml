@@ -1,0 +1,13 @@
+# Final do fluxo do cliente: aceitar a proposta e, depois que a empresa concluir, avaliar.
+# Para concluir: entre como contato@aurora.demo.syncevents.com, abra o pedido e toque em "Marcar evento como concluído".
+# Rodar:  maestro test e2e/completo-cliente-avaliacao.yaml
+appId: br.com.syncevents
+---
+- launchApp
+- tapOn:
+    id: 'tab-solicitacoes'
+- tapOn: 'Ver proposta'
+- tapOn:
+    id: 'aceitar-proposta'
+- tapOn: 'Aceitar'
+- assertVisible: 'Proposta aceita! Agora é só combinar os detalhes com a empresa.'

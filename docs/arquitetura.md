@@ -21,7 +21,7 @@ flowchart LR
     HTTP -- "HTTPS + Bearer" --> REST
     STOMP -- "WebSocket" --> WS
     Broker -- "/topic/conversas/{id}" --> STOMP
-    Repos --> DB[("PostgreSQL 16<br/>Flyway V1…V6")]
+    Repos --> DB[("PostgreSQL 16<br/>Flyway V1…V7")]
     Storage --> Arquivos[("/files/** (disco)")]
 ```
 
@@ -45,6 +45,7 @@ e `@Transactional` nos services.
 | `busca` | Busca textual sem acento (SQL + `unaccent`), recomendados e perfil público |
 | `solicitacao` | Pedidos de orçamento, máquina de estados, propostas e painel da empresa |
 | `chat` | Conversas, mensagens, histórico paginado, lidas e publicação no broker |
+| `avaliacao` | Avaliações de eventos concluídos, média, total e % que recomendam |
 | `storage` | Gravação e remoção de imagens |
 | `seed` | Dados de demonstração (perfil `dev`) |
 | `common` | Formato de erro único (`ApiErro`), handler global, validadores (senha, CNPJ, telefone, nome) |
@@ -80,11 +81,12 @@ erDiagram
     solicitacao ||--|| conversa : "1:1"
     conversa ||--o{ mensagem : ""
     proposta |o--o{ mensagem : "tipo PROPOSTA"
+    solicitacao ||--o| avaliacao : "1 por pedido concluído"
+    empresa ||--o{ avaliacao : ""
 ```
 
 Migrations Flyway: `V1` (unaccent) · `V2` usuários, clientes, empresas e categorias · `V3` serviços e portfólio ·
-`V4` visualizações · `V5` solicitações, propostas e conversas · `V6` mensagens.
-A tabela `avaliacao` chega na Fase 6.
+`V4` visualizações · `V5` solicitações, propostas e conversas · `V6` mensagens · `V7` avaliações.
 
 ## Fluxos
 
@@ -157,12 +159,21 @@ Propostas enviadas pela empresa também viram mensagens no tópico; quando o cli
 | `src/hooks/` | Hooks do TanStack Query: as telas só falam com a API por eles |
 | `src/chat/` | Conexão STOMP (reconexão automática) |
 | `src/schemas/` | Validações zod, com as mesmas regras e mensagens do backend |
-| `src/store/` | Sessão (Zustand + SecureStore) |
+| `src/store/` | Sessão e endereço do servidor (Zustand + SecureStore) |
 | `src/utils/` | Máscaras (telefone, CNPJ, CPF, moeda), formatação de datas e preços, helpers do chat |
 
 ### Telas por perfil
 
 | Cliente | Empresa | Ambos |
 |---|---|---|
-| Início · Buscar · Minhas solicitações · Perfil (abas) | Painel · Solicitações · Serviços · Perfil (abas) | Boas-vindas · Login · Cadastros |
+| Início · Buscar · Minhas solicitações · Perfil (abas) | Painel · Solicitações · Serviços · Perfil (abas) | Boas-vindas · Servidor · Login · Cadastros |
 | Perfil da empresa · Pedido de orçamento · Detalhe da solicitação | Criar/editar serviço · Editar perfil · Detalhe da solicitação | Conversas · Chat |
+
+## Build e entrega
+
+| Peça | Como funciona |
+|---|---|
+| APK | `.github/workflows/android-apk.yml`: `npm ci` → testes → `expo prebuild` → `./gradlew assembleRelease` → publica o `.apk` numa Release do GitHub (e como artifact) |
+| Endereço do backend | Padrão `http://10.0.2.2:8080` (emulador), trocável no app pela tela **Servidor** (salvo no SecureStore). O APK permite HTTP sem TLS (`usesCleartextTraffic`) para testes em rede local |
+| Backend em container | `backend/Dockerfile` (build Maven multi-stage) usado pelo `docker-compose.yml` |
+| CI | `.github/workflows/ci.yml`: `mvn verify` (Testcontainers) + testes, tipos, lint e Prettier do app |
