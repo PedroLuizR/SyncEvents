@@ -146,6 +146,7 @@ O que cada suíte cobre: [`docs/testes.md`](docs/testes.md). No GitHub, o workfl
 | [`docs/decisoes.md`](docs/decisoes.md) | Todas as decisões tomadas e a lista de diferenças em relação ao Figma |
 | [`docs/SyncEvents-Documentacao.pdf`](docs/SyncEvents-Documentacao.pdf) | Toda a documentação num PDF |
 | [`docs/testes.md`](docs/testes.md) | Estratégia de testes e o que cada suíte verifica |
+| [`docs/testes-sanidade.md`](docs/testes-sanidade.md) | Roteiro manual de testes de sanidade do APK |
 | [`docs/deploy.md`](docs/deploy.md) | Deploy do backend no Railway (passo a passo) e em outras plataformas |
 | [`docs/telas/`](docs/telas/) | Prints de cada fase rodando contra o backend real |
 | [`SYNCEVENTS_PLANO.md`](SYNCEVENTS_PLANO.md) | Plano original de implementação (produto, regras, fases) |
