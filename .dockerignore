@@ -1,0 +1,6 @@
+# Contexto de build da raiz (railway.json): só o backend interessa.
+mobile/
+docs/
+.github/
+backend/target/
+backend/uploads/

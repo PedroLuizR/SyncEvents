@@ -121,6 +121,7 @@ Todas as escolhas feitas durante o desenvolvimento, principalmente onde o plano 
 | 73 | Hospedagem recomendada: **Railway** (Docker + PostgreSQL + volume + HTTPS, ~US$ 5/mês). Alternativa gratuita: VM "Always Free" da Oracle Cloud com `docker compose`. O plano grátis do Render foi descartado porque o serviço "dorme" sem acesso. | Backend precisa ficar sempre ativo (chat em WebSocket) e guardar uploads. |
 | 74 | Perfil **`prod`** separado: seed desligado por padrão (`APP_SEED_DEMO=true` liga), uploads em `/data/uploads`, `APP_JWT_SECRET` obrigatório (sem ele o backend não sobe). | Evita subir em produção com segredo ou dados de desenvolvimento. |
 | 75 | `DATABASE_URL` no formato `postgresql://usuario:senha@host:porta/banco` é convertido para JDBC por um `EnvironmentPostProcessor`; `DB_URL` (JDBC) tem prioridade. | Railway, Render, Fly.io e Heroku entregam o banco nesse formato; assim basta referenciar a variável. |
+| 76 | `railway.json` na raiz + `backend/Dockerfile.railway` (contexto na raiz), além do `backend/railway.json`. | Sem Root Directory configurado, o Railway analisava a raiz do monorepo e falhava ("Railpack could not determine how to build the app"). |
 
 ## Diferenças em relação ao Figma (revisão tela a tela)
 

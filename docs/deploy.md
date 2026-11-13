@@ -18,10 +18,9 @@ O plano **Hobby** custa por volta de **US$ 5/mês** (com créditos de uso inclus
 1. Entre em **railway.com** com sua conta do GitHub.
 2. **New Project → Deploy from GitHub repo** → escolha `PedroLuizR/SyncEvents`
    (autorize o app do Railway a ler o repositório, se ele pedir).
-3. O Railway cria um serviço para o repositório. Abra-o e, em **Settings → Source**:
-   - **Root Directory:** `backend`
-   - **Config file (config-as-code):** `/backend/railway.json`
-   - Branch: `main`
+3. O Railway cria um serviço para o repositório. Não é preciso mudar nada em **Settings → Source**: o `railway.json`
+   da raiz já manda construir o backend (`backend/Dockerfile.railway`). Deixe **Root Directory** vazio e a branch `main`.
+   (Se preferir usar `backend` como Root Directory, aponte o config file para `/backend/railway.json`; também funciona.)
 
 ### 2. Adicionar o PostgreSQL
 
@@ -76,7 +75,7 @@ falta o `APP_JWT_SECRET`.
 
 | Peça | Detalhe |
 |---|---|
-| `backend/railway.json` | build pelo `Dockerfile`, health check em `/actuator/health`, reinício em caso de falha, deploy só quando `backend/**` muda |
+| `railway.json` (raiz) | build por `backend/Dockerfile.railway` (contexto na raiz); `backend/railway.json` é a alternativa com Root Directory `backend`. Ambos com health check em `/actuator/health`, reinício em caso de falha, deploy só quando `backend/**` muda |
 | Perfil `prod` (`application-prod.yml`) | logs em INFO, uploads em `/data/uploads`, seed desligado por padrão, pool de 5 conexões, cabeçalhos do proxy HTTPS respeitados |
 | `DatabaseUrlEnvironmentPostProcessor` | converte `postgresql://usuario:senha@host:porta/banco` em `jdbc:postgresql://...` + usuário + senha (também serve para Render, Fly.io e Heroku). `DB_URL` em JDBC, se existir, tem prioridade |
 | Dockerfile | Java 21, usa até 75% da memória do container |
