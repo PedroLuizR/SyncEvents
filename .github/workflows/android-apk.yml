@@ -53,6 +53,8 @@ jobs:
           echo "ANDROID_HOME=$ANDROID_HOME"
           SDKMANAGER=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | head -1)
           yes | "$SDKMANAGER" --licenses > /dev/null || true
+          # versões exigidas pelo React Native 0.88 (node_modules/react-native/gradle/libs.versions.toml)
+          "$SDKMANAGER" --install "platforms;android-37" "build-tools;37.0.0" "ndk;27.1.12297006" 2>&1 | tee -a "$GITHUB_WORKSPACE/build.log" | tail -5
 
       - name: Cache do Gradle
         uses: actions/cache@v4
@@ -67,16 +69,22 @@ jobs:
 
       - name: Testes, tipos e lint
         run: |
-          npm test -- --ci
-          npm run typecheck
-          npm run lint
+          set -o pipefail
+          npm test -- --ci 2>&1 | tee -a "$GITHUB_WORKSPACE/build.log" | tail -20
+          npm run typecheck 2>&1 | tee -a "$GITHUB_WORKSPACE/build.log"
+          npm run lint 2>&1 | tee -a "$GITHUB_WORKSPACE/build.log"
 
       - name: Gerar o projeto Android (expo prebuild)
-        run: npx expo prebuild --platform android --no-install --clean
+        run: |
+          set -o pipefail
+          npx expo prebuild --platform android --no-install --clean 2>&1 | tee -a "$GITHUB_WORKSPACE/build.log"
 
       - name: Compilar o APK de release
         working-directory: mobile/android
-        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=armeabi-v7a,arm64-v8a,x86_64
+        run: |
+          set -o pipefail
+          ./gradlew assembleRelease --no-daemon --stacktrace -PreactNativeArchitectures=armeabi-v7a,arm64-v8a,x86_64 \
+            2>&1 | tee -a "$GITHUB_WORKSPACE/build.log"
 
       - name: Renomear o APK
         id: apk
@@ -85,6 +93,23 @@ jobs:
           cp android/app/build/outputs/apk/release/app-release.apk "../$NOME"
           echo "nome=$NOME" >> "$GITHUB_OUTPUT"
           ls -lh "../$NOME"
+
+      # Em caso de falha, publica o fim do log como anotações (visíveis sem abrir o log completo)
+      - name: Resumo do erro
+        if: failure()
+        working-directory: .
+        run: |
+          touch build.log
+          grep -nE "FAILURE|What went wrong|error:|Error:|ERROR|Could not|failed" build.log | tail -15 > erros.txt || true
+          while IFS= read -r linha; do echo "::error title=Linha do log::${linha:0:900}"; done < erros.txt
+          tail -c 3000 build.log | tr '\n' ' ' | fold -w 900 | tail -4 | while IFS= read -r t; do echo "::error title=Fim do log::$t"; done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-log-${{ github.run_number }}
+          path: build.log
+          if-no-files-found: ignore
 
       - uses: actions/upload-artifact@v4
         with:
