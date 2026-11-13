@@ -7,7 +7,7 @@ O plano completo de implementação (contexto, stack, modelo de dados, API, fase
 - Fases 0 a 7 concluídas (ver tabela no README). O APK é gerado pelo GitHub Actions (`.github/workflows/android-apk.yml`) e publicado em Releases.
 - Design: `docs/design/00-visao-geral.png` (sem link do Figma).
 - Decisões e diferenças em relação ao Figma: `docs/decisoes.md` (registre lá qualquer escolha nova, numerada).
-- Arquitetura: `docs/arquitetura.md` · API: `docs/api.md` · testes: `docs/testes.md`.
+- Arquitetura: `docs/arquitetura.md` · API: `docs/api.md` · testes: `docs/testes.md` · deploy (Railway, perfil `prod`): `docs/deploy.md`.
 
 ## Convenções práticas
 

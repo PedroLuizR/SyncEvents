@@ -6,7 +6,7 @@ Cada fase entrega testes de **service** (unitários), **controller/API** (integr
 
 | Onde | Testes | Ferramentas |
 |---|---|---|
-| Backend: unitários | 94 | JUnit 5, Mockito, AssertJ |
+| Backend: unitários | 98 | JUnit 5, Mockito, AssertJ |
 | Backend: integração | 63 | Spring Boot Test, MockMvc, Testcontainers (PostgreSQL 16), cliente STOMP real |
 | Mobile | 151 | Jest (jest-expo), React Native Testing Library |
 | E2E | 9 fluxos | Maestro (`mobile/e2e/`) |

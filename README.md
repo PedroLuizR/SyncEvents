@@ -31,7 +31,7 @@ responde pedidos e acompanha seus indicadores.
 | 6 | Avaliações (nota, destaques, média e % que recomendam no perfil e na busca) | ID11 | ✅ |
 | 7 | Acabamento: revisão visual, acessibilidade, ícone, tela de servidor, fluxos Maestro completos, APK de release | — | ✅ |
 
-Números atuais: **157 testes no backend** (94 unitários + 63 de integração com Postgres real) e **151 no mobile**,
+Números atuais: **161 testes no backend** (98 unitários + 63 de integração com Postgres real) e **151 no mobile**,
 todos passando, com typecheck, lint e Prettier sem erros.
 
 ## Funcionalidades
@@ -73,6 +73,13 @@ todos passando, com typecheck, lint e Prettier sem erros.
 5. **Entre** com uma conta de demonstração (abaixo) ou crie uma nova.
 
 > O APK é assinado com a chave de depuração (suficiente para testes; para publicar na Play Store, gere uma chave de release).
+
+## Backend na nuvem (sempre ativo)
+
+O backend está pronto para o **Railway** (HTTPS, PostgreSQL gerenciado, volume para os uploads e deploy automático a cada push):
+basta criar o projeto a partir deste repositório, adicionar o PostgreSQL e definir `SPRING_PROFILES_ACTIVE=prod`,
+`DATABASE_URL=${{Postgres.DATABASE_URL}}` e `APP_JWT_SECRET`. Passo a passo completo em [`docs/deploy.md`](docs/deploy.md).
+Depois, no app, informe o endereço `https://…up.railway.app` na tela **Servidor**.
 
 ## Como rodar (desenvolvimento)
 
@@ -138,6 +145,7 @@ O que cada suíte cobre: [`docs/testes.md`](docs/testes.md). No GitHub, o workfl
 | [`docs/decisoes.md`](docs/decisoes.md) | Todas as decisões tomadas e a lista de diferenças em relação ao Figma |
 | [`docs/SyncEvents-Documentacao.pdf`](docs/SyncEvents-Documentacao.pdf) | Toda a documentação num PDF |
 | [`docs/testes.md`](docs/testes.md) | Estratégia de testes e o que cada suíte verifica |
+| [`docs/deploy.md`](docs/deploy.md) | Deploy do backend no Railway (passo a passo) e em outras plataformas |
 | [`docs/telas/`](docs/telas/) | Prints de cada fase rodando contra o backend real |
 | [`SYNCEVENTS_PLANO.md`](SYNCEVENTS_PLANO.md) | Plano original de implementação (produto, regras, fases) |
 

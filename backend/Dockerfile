@@ -11,4 +11,5 @@ WORKDIR /app
 COPY --from=build /app.jar app.jar
 ENV APP_STORAGE_DIR=/app/uploads
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# usa até 75% da memória do container (planos pequenos de nuvem)
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "/app/app.jar"]

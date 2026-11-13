@@ -1,0 +1,32 @@
+# Perfil de produção (Railway, Render, Fly.io, VM...). Ative com SPRING_PROFILES_ACTIVE=prod.
+#
+# Obrigatórias:
+#   APP_JWT_SECRET   segredo do JWT, 32+ caracteres (ex.: openssl rand -base64 48)
+#   DATABASE_URL     postgresql://usuario:senha@host:porta/banco   (ou DB_URL + DB_USER + DB_PASSWORD em JDBC)
+# Opcionais:
+#   APP_STORAGE_DIR  pasta dos uploads; aponte para um volume persistente (ex.: /data/uploads)
+#   APP_SEED_DEMO    true para criar os dados de demonstração na primeira subida
+#   APP_CORS_ORIGINS origens web permitidas (o app nativo não precisa)
+spring:
+  datasource:
+    url: ${DB_URL:}
+    username: ${DB_USER:}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+
+server:
+  # atrás do proxy HTTPS da plataforma (X-Forwarded-*)
+  forward-headers-strategy: framework
+  shutdown: graceful
+
+logging:
+  level:
+    root: INFO
+    br.com.syncevents: INFO
+
+app:
+  storage:
+    diretorio: ${APP_STORAGE_DIR:/data/uploads}
+  seed:
+    demo: ${APP_SEED_DEMO:false}
