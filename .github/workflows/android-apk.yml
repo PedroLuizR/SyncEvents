@@ -13,7 +13,7 @@ on:
       api_url:
         description: "Endereço padrão do backend embutido no APK (pode ser trocado no app, na tela Servidor)"
         required: false
-        default: "http://10.0.2.2:8080"
+        default: "https://syncevents-production.up.railway.app"
 
 permissions:
   contents: write
@@ -30,7 +30,7 @@ jobs:
       run:
         working-directory: mobile
     env:
-      EXPO_PUBLIC_API_URL: ${{ github.event.inputs.api_url || 'http://10.0.2.2:8080' }}
+      EXPO_PUBLIC_API_URL: ${{ github.event.inputs.api_url || 'https://syncevents-production.up.railway.app' }}
       VERSAO: "1.0.0"
     steps:
       - uses: actions/checkout@v4
@@ -128,9 +128,9 @@ jobs:
 
           **Como instalar:** baixe o arquivo \`.apk\` abaixo no celular (ou arraste para o emulador) e permita a instalação de apps desta fonte.
 
-          **Backend:** o app precisa do backend rodando (veja o README: \`docker compose up -d\`).
-          O endereço padrão é \`${EXPO_PUBLIC_API_URL}\` (emulador Android). Num celular, toque em **"Servidor: ... · alterar"**
-          na tela de boas-vindas e informe o IP do computador, por exemplo \`192.168.0.10:8080\`.
+          **Backend:** o app já vem apontando para \`${EXPO_PUBLIC_API_URL}\` (backend na nuvem, sempre ativo).
+          Para usar um backend local, toque em **"Servidor: ... · alterar"** na tela de boas-vindas
+          (emulador: \`10.0.2.2:8080\`; celular: o IP do computador, por exemplo \`192.168.0.10:8080\`).
 
           **Contas de demonstração** (senha \`Senha@123\`): cliente \`marina@demo.syncevents.com\` · empresa \`contato@aurora.demo.syncevents.com\`.
           NOTAS

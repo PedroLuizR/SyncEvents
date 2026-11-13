@@ -115,6 +115,7 @@ export default function ServidorScreen() {
 
       <View style={styles.dicas}>
         <Text variant="label">Dicas</Text>
+        <Text variant="caption">• Na nuvem: https://syncevents-production.up.railway.app</Text>
         <Text variant="caption">• Emulador Android: http://10.0.2.2:8080</Text>
         <Text variant="caption">
           • Celular: use o IP do computador onde o backend roda (ex.: http://192.168.0.10:8080), na

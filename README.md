@@ -65,8 +65,9 @@ todos passando, com typecheck, lint e Prettier sem erros.
    (`SyncEvents-v1.0.0-buildN.apk`). Ele é gerado pelo GitHub Actions a cada mudança no app
    (workflow [`android-apk.yml`](.github/workflows/android-apk.yml)); também fica como *artifact* em Actions → "APK Android".
 3. **Instale:** no emulador, arraste o arquivo para a janela; no celular, abra o arquivo e permita "instalar apps desta fonte".
-4. **Aponte para o servidor:** na tela de boas-vindas, toque em **"Servidor: … · alterar"**.
-   - Emulador Android: `10.0.2.2:8080` (já é o padrão).
+4. **Servidor:** o APK já vem apontando para o backend na nuvem (`https://syncevents-production.up.railway.app`), então basta abrir e entrar.
+   Para usar um backend local, toque em **"Servidor: … · alterar"** na tela de boas-vindas:
+   - Emulador Android: `10.0.2.2:8080`.
    - Celular: o IP do computador na mesma rede Wi-Fi, por exemplo `192.168.0.10:8080`
      (no Windows: `ipconfig`; no Linux/macOS: `ip addr` / `ifconfig`). Libere a porta 8080 no firewall se necessário.
    - Toque em **Testar e salvar**: o app confere se o backend responde.

@@ -174,7 +174,7 @@ Propostas enviadas pela empresa também viram mensagens no tópico; quando o cli
 | Peça | Como funciona |
 |---|---|
 | APK | `.github/workflows/android-apk.yml`: `npm ci` → testes → `expo prebuild` → `./gradlew assembleRelease` → publica o `.apk` numa Release do GitHub (e como artifact) |
-| Endereço do backend | Padrão `http://10.0.2.2:8080` (emulador), trocável no app pela tela **Servidor** (salvo no SecureStore). O APK permite HTTP sem TLS (`usesCleartextTraffic`) para testes em rede local |
+| Endereço do backend | No APK: `https://syncevents-production.up.railway.app` (Railway). Sem `EXPO_PUBLIC_API_URL`: `http://10.0.2.2:8080` (emulador). Trocável no app pela tela **Servidor** (salvo no SecureStore). O APK permite HTTP sem TLS (`usesCleartextTraffic`) para testes em rede local |
 | Backend em container | `backend/Dockerfile` (build Maven multi-stage) usado pelo `docker-compose.yml` e pelo Railway |
 | Produção | Perfil `prod` + `backend/railway.json`; `DATABASE_URL` no formato `postgresql://...` é convertido para JDBC na subida (ver [`deploy.md`](deploy.md)) |
 | CI | `.github/workflows/ci.yml`: `mvn verify` (Testcontainers) + testes, tipos, lint e Prettier do app |
